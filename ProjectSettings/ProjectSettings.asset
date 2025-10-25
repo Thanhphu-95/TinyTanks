@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 28
-  productGUID: 4f284ae9a2bef404f895f3d268cd98a3
+  productGUID: 6e535bdb407e45445b93b41beeb2b2ee
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -79,7 +79,7 @@ PlayerSettings:
   androidMinimumWindowHeight: 300
   androidFullscreenMode: 1
   androidAutoRotationBehavior: 1
-  androidPredictiveBackSupport: 1
+  androidPredictiveBackSupport: 0
   androidApplicationEntry: 2
   defaultIsNativeResolution: 1
   macRetinaSupport: 1
@@ -255,8 +255,8 @@ PlayerSettings:
   iOSAutomaticallyDetectAndAddCapabilities: 1
   appleEnableProMotion: 0
   shaderPrecisionModel: 0
-  clonedFromGUID: 3c72c65a16f0acb438eed22b8b16c24a
-  templatePackageId: com.unity.template.urp-blank@17.0.14
+  clonedFromGUID: ff17440441dfe7f4690fbf41d4474e66
+  templatePackageId: 
   templateDefaultScene: Assets/Scenes/SampleScene.unity
   useCustomMainManifest: 0
   useCustomLauncherManifest: 0
@@ -823,7 +823,23 @@ PlayerSettings:
   webGLCloseOnQuit: 0
   webWasm2023: 0
   webEnableSubmoduleStrippingCompatibility: 0
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    Android: UNITY_POST_PROCESSING_STACK_V2
+    EmbeddedLinux: UNITY_POST_PROCESSING_STACK_V2
+    GameCoreScarlett: UNITY_POST_PROCESSING_STACK_V2
+    GameCoreXboxOne: UNITY_POST_PROCESSING_STACK_V2
+    Kepler: UNITY_POST_PROCESSING_STACK_V2
+    LinuxHeadlessSimulation: UNITY_POST_PROCESSING_STACK_V2
+    Nintendo Switch: UNITY_POST_PROCESSING_STACK_V2
+    PS4: UNITY_POST_PROCESSING_STACK_V2
+    PS5: UNITY_POST_PROCESSING_STACK_V2
+    QNX: UNITY_POST_PROCESSING_STACK_V2
+    ReservedCFE: UNITY_POST_PROCESSING_STACK_V2
+    Standalone: UNITY_POST_PROCESSING_STACK_V2
+    VisionOS: UNITY_POST_PROCESSING_STACK_V2
+    WebGL: UNITY_POST_PROCESSING_STACK_V2
+    XboxOne: UNITY_POST_PROCESSING_STACK_V2
+    tvOS: UNITY_POST_PROCESSING_STACK_V2
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
@@ -831,7 +847,21 @@ PlayerSettings:
   il2cppCompilerConfiguration: {}
   il2cppCodeGeneration: {}
   il2cppStacktraceInformation: {}
-  managedStrippingLevel: {}
+  managedStrippingLevel:
+    Android: 1
+    EmbeddedLinux: 1
+    GameCoreScarlett: 1
+    GameCoreXboxOne: 1
+    Nintendo Switch: 1
+    PS4: 1
+    PS5: 1
+    QNX: 1
+    VisionOS: 1
+    WebGL: 1
+    Windows Store Apps: 1
+    XboxOne: 1
+    iPhone: 1
+    tvOS: 1
   incrementalIl2cppBuild: {}
   suppressCommonWarnings: 1
   allowUnsafeCode: 0
@@ -844,14 +874,14 @@ PlayerSettings:
   editorAssembliesCompatibilityLevel: 1
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: My project
+  metroPackageName: Tank3D
   metroPackageVersion: 
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
   metroCertificateIssuer: 
   metroCertificateNotAfter: 0000000000000000
-  metroApplicationDescription: My project
+  metroApplicationDescription: Tank3D
   wsaImages: {}
   metroTileShortName: 
   metroTileShowName: 0
@@ -920,7 +950,7 @@ PlayerSettings:
   qnxGraphicConfPath: 
   apiCompatibilityLevel: 6
   captureStartupLogs: {}
-  activeInputHandler: 1
+  activeInputHandler: 2
   windowsGamepadBackendHint: 0
   cloudProjectId: 3d1542a8-9a70-4d83-b078-f8f189aa65d7
   framebufferDepthMemorylessMode: 0
