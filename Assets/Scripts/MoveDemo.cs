@@ -1,0 +1,79 @@
+﻿using UnityEngine;
+
+public class PlayerMovement : MonoBehaviour
+{
+    [Header("Movement Settings")]
+    public float moveSpeed = 5f;
+    public float rotationSpeed = 200f;
+
+    [Header("Turret Settings")]
+    public Transform turret;        // gắn phần Turret của tank
+    public LayerMask groundMask;    // layer mặt đất (ví dụ "Ground")
+    public float turretRotateSpeed = 10f;
+
+    private Rigidbody rb;
+    private Vector3 moveDirection;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = false; // cho phép xe nghiêng khi va chạm
+    }
+
+    void Update()
+    {
+        // --- Điều khiển di chuyển ---
+        float moveInput = Input.GetAxis("Vertical");   // W / S
+        float rotateInput = Input.GetAxis("Horizontal"); // A / D
+
+        moveDirection = transform.forward * moveInput * moveSpeed;
+        transform.Rotate(Vector3.up * rotateInput * rotationSpeed * Time.deltaTime);
+
+        // --- Lật lại xe ---
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            ResetRotation();
+        }
+
+        // --- Xoay turret theo hướng chuột ---
+        RotateTurretToMouse();
+    }
+
+    void FixedUpdate()
+    {
+        rb.MovePosition(rb.position + moveDirection * Time.fixedDeltaTime);
+    }
+
+    void ResetRotation()
+    {
+        Quaternion upright = Quaternion.Euler(0, transform.eulerAngles.y, 0);
+        rb.MoveRotation(upright);
+        rb.angularVelocity = Vector3.zero;
+    }
+
+    void RotateTurretToMouse()
+    {
+        if (turret == null) return;
+
+        // Tạo ray từ camera chính tới vị trí chuột
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, 1000f, groundMask))
+        {
+            Vector3 lookPoint = hit.point;
+            Vector3 dir = lookPoint - turret.position;
+            dir.y = 0; // chỉ xoay ngang
+
+            if (dir.sqrMagnitude > 0.1f)
+            {
+                Quaternion targetRot = Quaternion.LookRotation(dir);
+                turret.rotation = Quaternion.Lerp(
+                    turret.rotation,
+                    targetRot,
+                    Time.deltaTime * turretRotateSpeed
+                );
+            }
+        }
+    }
+}
