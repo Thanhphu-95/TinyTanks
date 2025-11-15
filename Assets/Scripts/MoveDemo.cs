@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = false; // cho phép xe nghiêng khi va chạm
+        rb.centerOfMass = new Vector3(0, -0.5f, 0);
     }
 
     void Update()
@@ -55,25 +56,30 @@ public class PlayerMovement : MonoBehaviour
     {
         if (turret == null) return;
 
-        // Tạo ray từ camera chính tới vị trí chuột
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit, 1000f, groundMask))
         {
             Vector3 lookPoint = hit.point;
+
+            // Vector hướng từ turret tới điểm chuột
             Vector3 dir = lookPoint - turret.position;
-            dir.y = 0; // chỉ xoay ngang
+            dir.y = 0; // Xoay ngang theo world
 
             if (dir.sqrMagnitude > 0.1f)
             {
-                Quaternion targetRot = Quaternion.LookRotation(dir);
-                turret.rotation = Quaternion.Lerp(
-                    turret.rotation,
+                // Tính rotation theo world up (giữ turret không nghiêng theo thân xe)
+                Quaternion targetRot = Quaternion.LookRotation(dir, Vector3.up);
+
+                // Xoay bằng localRotation để giữ đúng vị trí trên thân xe
+                turret.localRotation = Quaternion.Lerp(
+                    turret.localRotation,
                     targetRot,
                     Time.deltaTime * turretRotateSpeed
                 );
             }
         }
     }
+
 }
