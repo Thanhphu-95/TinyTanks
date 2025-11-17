@@ -63,21 +63,23 @@ public class PlayerMovement : MonoBehaviour
         {
             Vector3 lookPoint = hit.point;
 
-            // Vector hướng từ turret tới điểm chuột
             Vector3 dir = lookPoint - turret.position;
-            dir.y = 0; // Xoay ngang theo world
+            dir.y = 0;  // chỉ xoay ngang
 
             if (dir.sqrMagnitude > 0.1f)
             {
-                // Tính rotation theo world up (giữ turret không nghiêng theo thân xe)
                 Quaternion targetRot = Quaternion.LookRotation(dir, Vector3.up);
 
-                // Xoay bằng localRotation để giữ đúng vị trí trên thân xe
-                turret.localRotation = Quaternion.Lerp(
-                    turret.localRotation,
+                // 1. Xoay theo WORLD để không lệch
+                turret.rotation = Quaternion.Lerp(
+                    turret.rotation,
                     targetRot,
                     Time.deltaTime * turretRotateSpeed
                 );
+
+                // 2. Khóa lại local X và Z để turret không nghiêng
+                Vector3 e = turret.localEulerAngles;
+                turret.localEulerAngles = new Vector3(0, e.y, 0);
             }
         }
     }

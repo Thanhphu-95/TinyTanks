@@ -16,8 +16,8 @@ TagManager:
   - Ground
   - Players
   - PostProcessing
-  - 
-  - 
+  - BulletPlayer
+  - WallMap
   - 
   - 
   - 
