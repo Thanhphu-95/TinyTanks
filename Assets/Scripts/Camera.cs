@@ -10,8 +10,8 @@ public class CameraAutoZoom : MonoBehaviour
     public float zoomSpeed = 5f;
 
     [Header("Look At Mouse")]
-    public float lookStrength = 0.3f;   // độ nghiêng về phía con trỏ (0.1 đến 0.5)
-    public float lookSmooth = 5f;       // mượt
+    public float lookStrength = 0.3f;   
+    public float lookSmooth = 5f;       
 
     private Vector3 lastPos;
     private float currentZoom;
