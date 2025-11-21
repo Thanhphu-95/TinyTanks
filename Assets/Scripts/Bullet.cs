@@ -8,6 +8,10 @@ public class Bullet : MonoBehaviour
     private Rigidbody rb;
     public LayerMask collisionLayers;
     public GameObject explosionPrefab;
+    public GameObject TankHitPrefab;
+
+
+
 
     void Start()
     {
@@ -28,6 +32,19 @@ public class Bullet : MonoBehaviour
             Destroy(gameObject);
 
         }
+        if (collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("Player"))
+        {
+            Instantiate(TankHitPrefab, transform.position, Quaternion.identity);
+            Destroy(gameObject);
+
+            PlayerHealth playerHP = collision.gameObject.GetComponent<PlayerHealth>();
+
+            if (playerHP != null)
+            {
+                playerHP.TakeDamage(damage);
+            }
+        }
+
 
     }
 }
