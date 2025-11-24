@@ -14,7 +14,7 @@ public class UmbrellaShieldItem : SupportItem
 
         shieldInstance.transform.localPosition = new Vector3(0f, 0f, -0.5f);
 
-        Quaternion customRotation = Quaternion.Euler(90f, 0f, 0f);
+        Quaternion customRotation = Quaternion.Euler(80f, 0f, 0f);
         shieldInstance.transform.localRotation = customRotation;
 
         //Destroy(shieldInstance, duration);
