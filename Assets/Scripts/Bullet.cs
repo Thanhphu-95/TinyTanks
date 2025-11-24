@@ -10,27 +10,22 @@ public class Bullet : MonoBehaviour
     public GameObject explosionPrefab;
     public GameObject TankHitPrefab;
 
-
-
-
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         Destroy(gameObject, liftTime);
     }
 
-    void Update()
-    {
-
-    }
-
     private void OnCollisionEnter(Collision collision)
     {
+        if (collision.gameObject.CompareTag("PlayerShield"))
+        {
+            return;
+        }
         if (((1 << collision.gameObject.layer) & collisionLayers) != 0)
         {
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
             Destroy(gameObject);
-
         }
         if (collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("Player"))
         {
@@ -44,7 +39,5 @@ public class Bullet : MonoBehaviour
                 playerHP.TakeDamage(damage);
             }
         }
-
-
     }
 }

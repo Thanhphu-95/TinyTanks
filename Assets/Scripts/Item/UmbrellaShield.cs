@@ -23,8 +23,7 @@ public class UmbrellaShieldItem : SupportItem
 
     void OnCollisionEnter(Collision collision)
     {
-        // Kiểm tra đối tượng va chạm là viên đạn
-        if (collision.gameObject.CompareTag("Bullet"))
+        if (collision.gameObject.CompareTag("BulletEnemy")) // Kiểm tra đối tượng va chạm là viên đạn
         {
             Rigidbody bulletRb = collision.gameObject.GetComponent<Rigidbody>();
             if (bulletRb != null)
@@ -35,7 +34,7 @@ public class UmbrellaShieldItem : SupportItem
                 Vector3 reflectVelocity = Vector3.Reflect(incomingVelocity, normal);
 
                 bulletRb.linearVelocity = reflectVelocity;
-            
+
             }
         }
     }

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4564192331866224439}
   m_Layer: 13
   m_Name: Umbrella_Open (1)
-  m_TagString: Untagged
+  m_TagString: PlayerShield
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
