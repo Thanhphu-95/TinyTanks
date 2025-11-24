@@ -10,6 +10,12 @@ public class Bullet : MonoBehaviour
     public GameObject explosionPrefab;
     public GameObject TankHitPrefab;
 
+    [Header("Explosion")]
+    public float explosionRadius = 6f;
+    public float explosionForce = 1500f;
+    public float upwardModifier = 0.3f;  // lực hất lên
+    public LayerMask explosionAffectLayers;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -38,6 +44,42 @@ public class Bullet : MonoBehaviour
             {
                 playerHP.TakeDamage(damage);
             }
+            Explode();
         }
+    }
+
+
+    private void Explode()
+    {
+        // Hiệu ứng nổ
+        if (explosionPrefab != null)
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+
+        // Lấy tất cả vật trong vùng nổ
+        Collider[] hits = Physics.OverlapSphere(transform.position, explosionRadius, explosionAffectLayers);
+
+        foreach (var hit in hits)
+        {
+            Rigidbody hitRb = hit.attachedRigidbody;
+            if (hitRb != null)
+            {
+                hitRb.AddExplosionForce(
+                    explosionForce,
+                    transform.position,
+                    explosionRadius,
+                    upwardModifier,
+                    ForceMode.Impulse
+                );
+            }
+
+            // Nếu object có máu
+            PlayerHealth hp = hit.GetComponent<PlayerHealth>();
+            if (hp != null)
+            {
+                hp.TakeDamage(damage);
+            }
+        }
+
+        Destroy(gameObject);
     }
 }

@@ -161,3 +161,9 @@ MonoBehaviour:
     m_Bits: 256
   explosionPrefab: {fileID: 2433282508537954060, guid: 6050d56ab08b89e428018c81206f2dd9, type: 3}
   TankHitPrefab: {fileID: 2769948509372914464, guid: 6f69198eb66969647af475dbfd6227b5, type: 3}
+  explosionRadius: 1
+  explosionForce: 3
+  upwardModifier: 0.3
+  explosionAffectLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
