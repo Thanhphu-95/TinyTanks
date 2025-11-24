@@ -14,6 +14,8 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;
     private Vector3 moveDirection;
 
+    private PlayerHealth playerHealth;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -23,6 +25,9 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        playerHealth = GetComponent<PlayerHealth>();
+        if (playerHealth.isDead) return;
+
         // --- Điều khiển di chuyển ---
         float moveInput = Input.GetAxis("Vertical");   // W / S
         float rotateInput = Input.GetAxis("Horizontal"); // A / D
