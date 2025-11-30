@@ -46,14 +46,13 @@ public class Bullet : MonoBehaviour
             }
             Explode();
         }
+        
     }
 
 
     private void Explode()
     {
-        // Hiệu ứng nổ
-        if (explosionPrefab != null)
-            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        
 
         // Lấy tất cả vật trong vùng nổ
         Collider[] hits = Physics.OverlapSphere(transform.position, explosionRadius, explosionAffectLayers);

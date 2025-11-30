@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask groundMask;    // layer mặt đất (ví dụ "Ground")
     public float turretRotateSpeed = 10f;
 
-    private Rigidbody rb;
+    public Rigidbody rb;
     private Vector3 moveDirection;
 
     private PlayerHealth playerHealth;
@@ -34,13 +34,6 @@ public class PlayerMovement : MonoBehaviour
 
         moveDirection = transform.forward * moveInput * moveSpeed;
         transform.Rotate(Vector3.up * rotateInput * rotationSpeed * Time.deltaTime);
-
-        // --- Lật lại xe ---
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            ResetRotation();
-        }
-
         // --- Xoay turret theo hướng chuột ---
         RotateTurretToMouse();
     }
