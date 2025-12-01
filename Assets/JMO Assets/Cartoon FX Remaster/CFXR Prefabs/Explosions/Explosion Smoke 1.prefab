@@ -4920,7 +4920,7 @@ GameObject:
   - component: {fileID: 4893767420864293718}
   - component: {fileID: 221897642353241706}
   m_Layer: 0
-  m_Name: CFXR Explosion Smoke 1
+  m_Name: Explosion Smoke 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

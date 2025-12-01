@@ -14357,7 +14357,7 @@ GameObject:
   - component: {fileID: 1814315751473787962}
   - component: {fileID: 5861905151455563100}
   m_Layer: 0
-  m_Name: CFXR Electric Explosion
+  m_Name: Electric Explosion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
