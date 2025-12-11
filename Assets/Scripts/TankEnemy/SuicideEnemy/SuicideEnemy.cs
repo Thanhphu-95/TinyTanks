@@ -74,10 +74,18 @@ public class SuicideEnemy : MonoBehaviour
         Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRange);
         foreach (Collider hit in colliders)
         {
-            PlayerHealth playerHP = GetComponent<PlayerHealth>();
+            //PlayerHealth playerHP = GetComponent<PlayerHealth>();
+            //if (hit.CompareTag("Player"))
+            //{
+            //    playerHP.TakeDamage(explosionDamage);
+            //}
             if (hit.CompareTag("Player"))
             {
-                playerHP.TakeDamage(explosionDamage);
+                PlayerHealth playerHP = hit.GetComponent<PlayerHealth>();
+                if (playerHP != null) // Luôn kiểm tra null để tránh lỗi
+                {
+                    playerHP.TakeDamage(explosionDamage);
+                }
             }
 
             Rigidbody rb = hit.GetComponent<Rigidbody>();

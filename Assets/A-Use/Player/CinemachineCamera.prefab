@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 4018362630605440044}
   - component: {fileID: 5178842966580801863}
   - component: {fileID: 6772146855923204184}
-  - component: {fileID: 5975037818867455022}
   m_Layer: 0
   m_Name: CinemachineCamera
   m_TagString: Untagged
@@ -96,16 +95,3 @@ MonoBehaviour:
     RotationDamping: {x: 15, y: 15, z: 15}
     QuaternionDamping: 1
   FollowOffset: {x: 0, y: 11, z: -13}
---- !u!114 &5975037818867455022
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9016698829892215821}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e8b78ac948f05a46a6d8339a503172b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineHardLookAt
-  LookAtOffset: {x: 0, y: 2.2, z: 0.3}

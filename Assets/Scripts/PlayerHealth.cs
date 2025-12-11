@@ -4,6 +4,7 @@ public class PlayerHealth : MonoBehaviour
 {
     public int maxHealth = 100;
     public int currentHealth;
+    public PlayerUI playerUI;
 
     [Header("Die")]
     public Transform barrel;
@@ -15,6 +16,8 @@ public class PlayerHealth : MonoBehaviour
     public GameObject explodePrefab;
     private Rigidbody rb;
 
+    public MissionUI missionUI;
+
 
     public bool isDead = false;
 
@@ -23,12 +26,17 @@ public class PlayerHealth : MonoBehaviour
     {
         currentHealth = maxHealth;
         rb = GetComponent<Rigidbody>();
+        if (playerUI != null)
+            playerUI.UpdateHP(currentHealth, maxHealth);
     }
 
     public void Heal(int amount)
     {
         if (isDead) return;
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
+        if (playerUI != null)
+            playerUI.UpdateHP(currentHealth, maxHealth);
+
         Debug.Log("Player Healed: +" + amount + " | Current HP: " + currentHealth);
     }
 
@@ -37,6 +45,10 @@ public class PlayerHealth : MonoBehaviour
         if (isDead) return;
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+
+        if (playerUI != null)
+            playerUI.UpdateHP(currentHealth, maxHealth);
+
         Debug.Log("Player Damaged: -" + amount + " | Current HP: " + currentHealth);
 
         if (currentHealth <= 0)
@@ -56,10 +68,17 @@ public class PlayerHealth : MonoBehaviour
         Instantiate(explodePrefab, explode.position, explode.rotation);
         Instantiate(barrelPrefab, barrel.position, barrel.rotation);
         Instantiate(turretPrefab, turret.position, turret.rotation);
+        StartCoroutine(ShowFailedAfterDelay());
 
 
     }
+    private System.Collections.IEnumerator ShowFailedAfterDelay()
+    {
+        yield return new WaitForSeconds(3f);   // ⏳ Delay 3 giây
 
-    
+        if (missionUI != null)
+            missionUI.ShowFailed();
+    }
+
 
 }
