@@ -85,7 +85,7 @@ public class QuestReachPoint : Quest_Base           // Kế thừa lớp Quest_B
         {
             GameObject fx = GameObject.Instantiate(
                 effect, target.position, Quaternion.identity);   // Spawn hiệu ứng tại target
-            GameObject.Destroy(fx, 3f);             // Tự hủy sau 3 giây
+            GameObject.Destroy(fx, 60f);             // Tự hủy sau 3 giây
         }
     }
 }

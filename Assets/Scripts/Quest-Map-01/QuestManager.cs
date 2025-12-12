@@ -23,11 +23,13 @@ public class QuestManager : MonoBehaviour        // Script quản lý toàn bộ
     public GameObject checkpointEffect;          // Effect khi người chơi đến checkpoint
     [Header("UI")]
     public QuestTimerUI questTimerUI;
-    public MissionUI missionUI; 
+    public MissionUI missionUI;
+    public QuestTextUI questTextUI;
 
 
     void Start()
     {
+       
         if (players == null || players.Count == 0) // Nếu chưa kéo Player vào Inspector
         {
             players = new List<Transform>();        // Tạo list rỗng
@@ -39,7 +41,7 @@ public class QuestManager : MonoBehaviour        // Script quản lý toàn bộ
 
         var q1 = new QuestReachPoint(               // Quest 1: đi đến điểm A
             "Đến điểm A", players, pointA, checkpointEffect);
-
+         
         var q2 = new QuestReachPoint(               // Quest 2: đi đến điểm B
             "Đến điểm B", players, pointB, checkpointEffect);
 
@@ -56,6 +58,7 @@ public class QuestManager : MonoBehaviour        // Script quản lý toàn bộ
         foreach (var q in quests)
         {
             q.SetUI(missionUI);           // Gán MissionUI vào từng quest
+            q.SetQuestTextUI(questTextUI);
         }
         quests[currentIndex].StartQuest();          // Bắt đầu quest đầu tiên
     }
