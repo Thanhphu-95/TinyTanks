@@ -1,0 +1,48 @@
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class MenuManager : MonoBehaviour
+{
+    [Header("UI Panels")]
+    public GameObject mainMenuPanel;                        // Kéo Panel Menu chính vào đây
+    public GameObject mapSelectionPanel;                    // Kéo Panel Chọn Map vào đây
+
+    // Khi Object này được kích hoạt
+    private void OnEnable()
+    {
+        GameEvents.OnMapSelected += HandleMapSelected;      // Đăng ký: "Khi có map được chọn, gọi tôi"
+    }
+
+    // Khi Object này bị tắt hoặc hủy
+    private void OnDisable()
+    {
+        GameEvents.OnMapSelected -= HandleMapSelected;      // Hủy đăng ký để tránh lỗi bộ nhớ
+    }
+
+    // Hàm xử lý khi nhận được tín hiệu chọn Map
+    private void HandleMapSelected(string sceneName)
+    {
+        Debug.Log("Đang chuyển cảnh sang: " + sceneName);    // Log để kiểm tra trong Console
+        /*SceneManager.LoadScene(sceneName);  */                // Tiến hành nạp Scene mới
+    }
+
+    // --- CÁC HÀM ĐIỀU KHIỂN PANEL (Gắn trực tiếp vào nút Start/Back) ---
+
+    public void ShowMapSelection()                          // Gọi khi bấm nút "Start Game"
+    {
+        mainMenuPanel.SetActive(false);                     // Ẩn menu chính
+        mapSelectionPanel.SetActive(true);                  // Hiện menu chọn map
+    }
+
+    public void ShowMainMenu()                               // Gọi khi bấm nút "Back"
+    {
+        mainMenuPanel.SetActive(true);                      // Hiện menu chính
+        mapSelectionPanel.SetActive(false);                 // Ẩn menu chọn map
+    }
+
+    public void QuitGame()                                  // Gọi khi bấm nút "Exit"
+    {
+        Debug.Log("Thoát game");
+        Application.Quit();                                 // Thoát ứng dụng
+    }
+}
