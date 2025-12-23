@@ -11,14 +11,12 @@ public class MapButton : MonoBehaviour
 
     private void Start()
     {
-        // Kiểm tra trạng thái nút ngay khi bắt đầu
-        myButton.interactable = isUnlocked;
-
+        myButton.interactable = isUnlocked;// Kiểm tra trạng thái nút ngay khi bắt đầu
         if (lockIcon != null)
             lockIcon.SetActive(!isUnlocked);
 
-        // Đăng ký sự kiện Click: Khi bấm thì báo lên GameEvents
-        myButton.onClick.AddListener(() => {
+        
+        myButton.onClick.AddListener(() => {// Đăng ký sự kiện Click: Khi bấm thì báo lên GameEvents
             Debug.Log("Đang gửi yêu cầu vào Map: " + targetScene);
             GameEvents.RaiseMapSelected(targetScene);
         });

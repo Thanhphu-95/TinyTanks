@@ -6,37 +6,37 @@ using TMPro;
 
 public class LoadingManager : MonoBehaviour
 {
-    [Header("UI References")]
-    [SerializeField] private GameObject loadingPanel;    // Panel chứa toàn bộ UI loading
-    [SerializeField] private Slider progressBar;         // Thanh chạy
-    [SerializeField] private TextMeshProUGUI progressText; // Chữ hiện %
+    [SerializeField] private GameObject loadingPanel;
+    [SerializeField] private Slider progressBar;
+    [SerializeField] private TextMeshProUGUI progressText;
 
-    private void Awake()
-    {
-        // Đảm bảo khi mới vào Game, màn hình loading phải ẩn đi
-        loadingPanel.SetActive(false);
-
-        // GIỮ CHO LOADING KHÔNG BỊ XÓA (Tùy chọn)
-        // Nếu bạn muốn dùng 1 Loading duy nhất xuyên suốt game:
-        // DontDestroyOnLoad(gameObject); 
-    }
 
     private void OnEnable()
     {
-        // Đăng ký nghe sự kiện chọn Map từ trạm phát GameEvents
-        GameEvents.OnMapSelected += StartLoadingProcess;
+        GameEvents.OnMapSelected += StartLoad;// Đăng ký sự kiện: "Cứ mỗi khi có Scene nào load xong thì báo cho tôi"
+        
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void OnDisable()
     {
-        // Hủy đăng ký khi object bị ẩn/xóa để tránh lỗi
-        GameEvents.OnMapSelected -= StartLoadingProcess;
+        GameEvents.OnMapSelected -= StartLoad;
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    private void StartLoadingProcess(string sceneName)
+    private void StartLoad(string sceneName)
     {
-        // Bắt đầu tiến trình nạp bất đồng bộ
         StartCoroutine(LoadAsync(sceneName));
+    }
+
+    // Hàm này sẽ tự động chạy NGAY SAU KHI qua scene mới
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Nếu là scene Menu thì không hiện Countdown
+        if (scene.name == "Main Scene") return;
+
+        Debug.Log("Đã vào Scene mới: " + scene.name + ". Đang tạo Countdown...");
+        loadingPanel.SetActive(false);
     }
 
     IEnumerator LoadAsync(string sceneName)
@@ -58,7 +58,7 @@ public class LoadingManager : MonoBehaviour
 
             // Dùng Mathf.MoveTowards để thanh loading tăng dần dần, không bị nhảy vọt
             // 0.5f ở cuối là tốc độ tăng (bạn có thể chỉnh nhỏ lại nếu muốn load chậm hơn)
-            targetProgress = Mathf.MoveTowards(targetProgress, realProgress, Time.deltaTime * 0.2f);
+            targetProgress = Mathf.MoveTowards(targetProgress, realProgress, Time.deltaTime * 0.5f);
 
             if (progressBar != null) progressBar.value = targetProgress;
             if (progressText != null) progressText.text = (targetProgress * 100f).ToString("F0") + "%";
@@ -72,5 +72,6 @@ public class LoadingManager : MonoBehaviour
 
             yield return null;
         }
+
     }
 }

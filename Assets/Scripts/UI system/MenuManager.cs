@@ -6,15 +6,13 @@ public class MenuManager : MonoBehaviour
     [Header("UI Panels")]
     public GameObject mainMenuPanel;                        // Kéo Panel Menu chính vào đây
     public GameObject mapSelectionPanel;                    // Kéo Panel Chọn Map vào đây
-
-    // Khi Object này được kích hoạt
-    private void OnEnable()
+    
+    private void OnEnable()// Khi Object này được kích hoạt
     {
         GameEvents.OnMapSelected += HandleMapSelected;      // Đăng ký: "Khi có map được chọn, gọi tôi"
     }
-
-    // Khi Object này bị tắt hoặc hủy
-    private void OnDisable()
+    
+    private void OnDisable()// Khi Object này bị tắt hoặc hủy
     {
         GameEvents.OnMapSelected -= HandleMapSelected;      // Hủy đăng ký để tránh lỗi bộ nhớ
     }
@@ -23,7 +21,15 @@ public class MenuManager : MonoBehaviour
     private void HandleMapSelected(string sceneName)
     {
         Debug.Log("Đang chuyển cảnh sang: " + sceneName);    // Log để kiểm tra trong Console
-        /*SceneManager.LoadScene(sceneName);  */                // Tiến hành nạp Scene mới
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.ChangeScene(sceneName);
+        }
+        else
+        {
+            // Trường hợp chạy test map lẻ không qua Main Scene
+            SceneManager.LoadScene(sceneName);
+        }
     }
 
     // --- CÁC HÀM ĐIỀU KHIỂN PANEL (Gắn trực tiếp vào nút Start/Back) ---

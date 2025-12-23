@@ -1,121 +1,128 @@
-﻿using UnityEngine;                               // Dùng API của Unity
-using System.Collections.Generic;                // Dùng List<T>
+﻿using UnityEngine;
+using System.Collections.Generic;
 
-public class QuestManager : MonoBehaviour        // Script quản lý toàn bộ hệ thống nhiệm vụ
+
+public class QuestManager : MonoBehaviour
 {
-    public List<Transform> players;              // Danh sách player trong game (1 hoặc nhiều người)
-    public Transform pointA, pointB, pointC;     // Ba checkpoint A B C
-    public GameObject bossPrefab;                // Prefab của Boss để spawn
-    public Transform bossSpawnPoint;             // Vị trí sẽ spawn boss
+    [Header("Mission Info")]
+    [TextArea(3, 5)]
+    [SerializeField] private string missionDescription = "Nhiệm vụ: Vượt qua các checkpoint và tiêu diệt Boss!";
+    private bool isBattleStarted = false;
 
-    private List<Quest_Base> quests =            // Danh sách tất cả quest theo thứ tự
-        new List<Quest_Base>();
-    private int currentIndex = 0;                // Quest đang chạy hiện tại (index trong list)
+    [Header("Quest Objects (Local References)")]
+    public List<Transform> players;
+    public Transform pointA, pointB, pointC;
+    public GameObject bossPrefab;
+    public Transform bossSpawnPoint;
+    public GameObject checkpointEffect;
 
-    private float totalLimit = 600f;             // Giới hạn thời gian 10 phút
-    private float totalPassed = 0f;              // Thời gian đã trôi qua
-    private bool isFailed = false;               // Flag: nhiệm vụ bị thất bại
-    private bool allCompleted = false;           // Flag: tất cả quest đã hoàn thành
-
-    private QuestSpawnBoss spawnBossQuest;       // Lưu quest spawn boss để tạo quest kill boss
-    private QuestKillBoss killBossQuest;         // Lưu quest giết boss
-
-    public GameObject checkpointEffect;          // Effect khi người chơi đến checkpoint
-    [Header("UI")]
+    [Header("UI References (In-Scene)")]
     public QuestTimerUI questTimerUI;
     public MissionUI missionUI;
     public QuestTextUI questTextUI;
 
+    private List<Quest_Base> quests = new List<Quest_Base>();
+    private int currentIndex = 0;
+    private float totalLimit = 600f;
+    private float totalPassed = 0f;
+    private bool isFailed = false;
+    private bool allCompleted = false;
+
+    private QuestSpawnBoss spawnBossQuest;
 
     void Start()
     {
-       
-        if (players == null || players.Count == 0) // Nếu chưa kéo Player vào Inspector
+        // 1. Tự tìm Player nếu chưa có
+        if (players == null || players.Count == 0)
         {
-            players = new List<Transform>();        // Tạo list rỗng
-            GameObject[] found =                    // Tìm tất cả object tag Player
-                GameObject.FindGameObjectsWithTag("Player");
-            foreach (var go in found)               // Thêm vào list
+            players = new List<Transform>();
+            foreach (var go in GameObject.FindGameObjectsWithTag("Player"))
                 players.Add(go.transform);
         }
 
-        var q1 = new QuestReachPoint(               // Quest 1: đi đến điểm A
-            "Đến điểm A", players, pointA, checkpointEffect);
-         
-        var q2 = new QuestReachPoint(               // Quest 2: đi đến điểm B
-            "Đến điểm B", players, pointB, checkpointEffect);
+        // 2. Khởi tạo danh sách Quest địa phương
+        SetupQuestChain();
 
-        spawnBossQuest = new QuestSpawnBoss(        // Quest 3: spawn boss
-            "Spawn Boss", bossPrefab, bossSpawnPoint);
+        if (UIManager.Instance != null)
+        {
+            // TRUYỀN ĐÚNG: string (nhiệm vụ), sau đó là Action (hàm OnCountdownFinished)
+            UIManager.Instance.ShowCountdown(missionDescription, OnCountdownFinished);
+        }
+        else
+        {
+            OnCountdownFinished();
+        }
+    }
 
-        var q4 = new QuestReachPoint(               // Quest 4: đi đến điểm C
-            "Đến điểm C", players, pointC, checkpointEffect);
+    private void SetupQuestChain()
+    {
+        quests.Add(new QuestReachPoint("Đến điểm A", players, pointA, checkpointEffect));
+        quests.Add(new QuestReachPoint("Đến điểm B", players, pointB, checkpointEffect));
 
-        quests.Add(q1);                             // Thêm vào danh sách theo thứ tự 
-        quests.Add(q2);
+        spawnBossQuest = new QuestSpawnBoss("Spawn Boss", bossPrefab, bossSpawnPoint);
         quests.Add(spawnBossQuest);
-        quests.Add(q4);
+
+        quests.Add(new QuestReachPoint("Đến điểm C", players, pointC, checkpointEffect));
+
         foreach (var q in quests)
         {
-            q.SetUI(missionUI);           // Gán MissionUI vào từng quest
+            q.SetUI(missionUI);
             q.SetQuestTextUI(questTextUI);
         }
-        quests[currentIndex].StartQuest();          // Bắt đầu quest đầu tiên
+    }
+
+    private void OnCountdownFinished()
+    {
+        isBattleStarted = true;
+        if (quests.Count > 0) quests[currentIndex].StartQuest();
+        Debug.Log("Trận đấu chính thức bắt đầu!");
     }
 
     void Update()
     {
-        if (isFailed || allCompleted) return;       // Nếu fail hoặc xong hết → không chạy nữa
+        if (!isBattleStarted || isFailed || allCompleted) return;
 
-        totalPassed += Time.deltaTime;              // Cộng thời gian mỗi frame
+        totalPassed += Time.deltaTime;
 
-        if (totalPassed >= totalLimit)              // Nếu hết 10 phút
+        if (totalPassed >= totalLimit)
         {
-            isFailed = true;                        // Đánh dấu thất bại
-            Debug.Log("Nhiệm vụ thất bại: Hết 10 phút!");
-            missionUI.ShowFailed(); 
+            isFailed = true;
+            missionUI.ShowFailed();
             return;
         }
 
-        if (currentIndex < 0 ||                    // Nếu index bị sai
-            currentIndex >= quests.Count)          // Hoặc vượt khỏi list
-            return;                                // → Dừng để không lỗi OutOfRange
-
-        var current = quests[currentIndex];         // Lấy quest hiện tại
-        current.UpdateQuest();                      // Gọi Update() của quest đó
-
-        if (current.isCompleted)                    // Nếu quest đã hoàn thành
+        if (currentIndex < quests.Count)
         {
-            GoNextQuest();                          // Chuyển qua quest tiếp theo
+            var current = quests[currentIndex];
+            current.UpdateQuest();
+
+            if (current.isCompleted) GoNextQuest();
         }
 
         float timeLeft = totalLimit - totalPassed;
-
-        questTimerUI.UpdateTimer(timeLeft, totalLimit);
-
+        if (questTimerUI) questTimerUI.UpdateTimer(timeLeft, totalLimit);
     }
 
     void GoNextQuest()
     {
-        if (quests[currentIndex] == spawnBossQuest) // Nếu quest vừa làm là SpawnBoss
+        if (quests[currentIndex] == spawnBossQuest)
         {
-            var boss = spawnBossQuest.GetBoss();    // Lấy boss vừa spawn
-            killBossQuest = new QuestKillBoss(      // Tạo quest kill boss
-                "Tiêu diệt Boss", boss);
-            quests.Insert(currentIndex + 1,         // Chèn ngay sau quest spawn
-                killBossQuest);
+            var boss = spawnBossQuest.GetBoss();
+            var killBossQuest = new QuestKillBoss("Tiêu diệt Boss", boss);
+            killBossQuest.SetUI(missionUI);
+            killBossQuest.SetQuestTextUI(questTextUI);
+            quests.Insert(currentIndex + 1, killBossQuest);
         }
 
-        currentIndex++;                             // Chuyển sang quest kế tiếp
+        currentIndex++;
 
-        if (currentIndex >= quests.Count)           // Nếu vượt danh sách quest
+        if (currentIndex >= quests.Count)
         {
-            allCompleted = true;                    // Đánh dấu hoàn tất toàn bộ nhiệm vụ
-            Debug.Log("🎉 Hoàn thành toàn bộ nhiệm vụ!");
-            missionUI.ShowSuccess(); 
-            return;                                 // Dừng luôn không chạy StartQuest()
+            allCompleted = true;
+            missionUI.ShowSuccess();
+            return;
         }
 
-        quests[currentIndex].StartQuest();          // Bắt đầu quest kế tiếp
+        quests[currentIndex].StartQuest();
     }
 }
