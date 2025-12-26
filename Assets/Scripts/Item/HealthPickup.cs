@@ -2,43 +2,55 @@
 
 public class HealthPickup : MonoBehaviour
 {
-    public int totalHealAmount = 40;  // Tổng máu hồi
-    public float duration = 1f;        // Thời gian hồi (giây)
+    public int totalHealAmount = 40;
+    public float duration = 1f;
 
     private void OnTriggerEnter(Collider other)
     {
+        // Kiểm tra xem đối tượng va chạm có script PlayerHealth không
         PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
+
         if (playerHealth != null && !playerHealth.isDead)
         {
-            playerHealth.StartCoroutine(HealOverTime(playerHealth));
+            // Yêu cầu PlayerHealth tự thực hiện việc hồi máu theo thời gian
+            // Điều này đảm bảo khi vật phẩm bị Destroy, quá trình hồi vẫn chạy
+            playerHealth.StartCoroutine(HealOverTimeRoutine(playerHealth));
+
+            // Xóa ngay vật phẩm khỏi Scene
             Destroy(gameObject);
         }
     }
 
-    private System.Collections.IEnumerator HealOverTime(PlayerHealth playerHealth)
+    private System.Collections.IEnumerator HealOverTimeRoutine(PlayerHealth playerHealth)
     {
-        float healed = 0f;
-        float healRate = totalHealAmount / duration;  // máu hồi mỗi giây (float)
-
+        float healedRemainder = 0f;
+        float healRate = (float)totalHealAmount / duration;
         float timer = 0f;
 
         while (timer < duration)
         {
-            if (playerHealth.isDead) yield break;
+            // Nếu Player bỗng nhiên chết trong lúc đang hồi, dừng ngay lập tức
+            if (playerHealth == null || playerHealth.isDead) yield break;
 
             float healThisFrame = healRate * Time.deltaTime;
-            healed += healThisFrame;
+            healedRemainder += healThisFrame;
 
-            // Heal phải là số nguyên (int), nên mỗi frame lấy phần nguyên để hồi
-            int healInt = Mathf.FloorToInt(healed);
+            int healInt = Mathf.FloorToInt(healedRemainder);
             if (healInt > 0)
             {
+                // Gọi hàm Heal đã viết trong PlayerHealth
                 playerHealth.Heal(healInt);
-                healed -= healInt; // trừ phần đã hồi
+                healedRemainder -= healInt;
             }
 
             timer += Time.deltaTime;
             yield return null;
+        }
+
+        // Hồi nốt phần dư cuối cùng nếu còn sót lại > 0.5 đơn vị máu
+        if (playerHealth != null && !playerHealth.isDead && healedRemainder >= 0.5f)
+        {
+            playerHealth.Heal(1);
         }
     }
 }

@@ -1,33 +1,33 @@
-﻿using UnityEngine;                                  // Dùng API Unity
+﻿using UnityEngine;
 
-public class QuestKillBoss : Quest_Base             // Quest kiểm tra boss đã chết chưa
+public class QuestKillBoss : Quest_Base
 {
-    private GameObject boss;                        // Tham chiếu đến object boss cần tiêu diệt
+    private GameObject boss;
 
-    public QuestKillBoss(string name, GameObject bossRef)
-    {                                               // Constructor nhận tên và object boss
-        this.questName = name;                      // Gán tên quest
-        this.boss = bossRef;                        // Lưu object boss
-    }
-
-    public override void StartQuest()               // Gọi khi quest bắt đầu
+    public QuestKillBoss(string name, GameObject bossRef) : base(name)
     {
-        Debug.Log("Bắt đầu: " + questName);         // Log thông báo quest bắt đầu
+        this.questName = name;
+        this.questText = "Nhiệm vụ: " + name;
+        this.boss = bossRef;
     }
 
-    public override void UpdateQuest()              // Chạy mỗi frame
+    public override void StartQuest()
     {
-        if (isCompleted) return;                    // Nếu đã hoàn thành → không làm nữa
+        base.StartQuest();
+        //var bossScript = boss.GetComponent<BossController>();
+        //if (bossScript != null)
+        //{
+        //    var ui = Object.FindObjectOfType<BossHealthUI>(true);
+        //    if (ui != null) ui.ShowBossBar("TRÙM CUỐI", bossScript.maxHealth);
+        //}
 
-        if (boss == null)                           // Nếu boss đã bị Destroy() → coi như chết
-        {
-            CompleteQuest();                        // Hoàn thành quest
-        }
     }
+    
 
-    public override void CompleteQuest()            // Khi quest hoàn tất
+    public override void UpdateQuest()
     {
-        isCompleted = true;                         // Đánh dấu quest đã xong
-      /*  Debug.Log("Boss đã bị tiêu diệt!");   */      // In ra log xác nhận
+        if (!isCompleted && boss == null) CompleteQuest();
     }
+
+    public override void CompleteQuest() => isCompleted = true;
 }

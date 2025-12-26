@@ -1,91 +1,74 @@
-﻿using UnityEngine;                                  // Dùng Unity API
-using System.Collections.Generic;                   // Dùng List<T>
+﻿using UnityEngine;
+using System.Collections.Generic;
 
-public class QuestReachPoint : Quest_Base           // Kế thừa lớp Quest_Base
+public class QuestReachPoint : Quest_Base
 {
-    [Header("Quest Settings")]                      // Group trong Inspector
-    public List<Transform> players;                 // Danh sách người chơi
-    public Transform target;                        // Điểm cần đến
-    public float distanceNeeded = 2f;               // Khoảng cách tối đa để tính là đã vào
-    public float stayTimeRequired = 5f;             // Thời gian cần đứng trong vùng
+    private List<Transform> players;
+    private Transform target;
+    private float distanceNeeded = 3f;
+    private float stayTimeRequired;
+    private float currentStayTime = 0f;
+    private GameObject effect;
+    private bool isPlayerInside = false;
 
-    private float currentStayTime = 0f;             // Thời gian người chơi đã đứng trong vùng
-    private Transform playerInside = null;          // Player đang đứng trong vùng
-
-    [Header("Effect")]                              // Group effect
-    public GameObject effect;                       // Prefab hiệu ứng hoàn thành
-
-    public QuestReachPoint(string name, List<Transform> players, Transform target, GameObject effectPrefab, float stayTime = 5f)
-    {                                               // Constructor: khởi tạo quest
-        this.questName = name;                      // Gán tên quest
-        this.players = players;                     // Gán danh sách player
-        this.target = target;                       // Gán điểm đích
-        this.stayTimeRequired = stayTime;           // Thời gian đứng
-        this.effect = effectPrefab;                 // Gán hiệu ứng hoàn thành
-        this.questText = "Hãy đến " + name;
+    public QuestReachPoint(string name, List<Transform> players, Transform target, GameObject effectPrefab, float stayTime = 5f) : base(name)
+    {
+        this.questName = name;
+        this.players = players;
+        this.target = target;
+        this.stayTimeRequired = stayTime;
+        this.effect = effectPrefab;
+        this.questText = "Nhiệm vụ: Đến " + name;
     }
 
-    public override void StartQuest()               // Hàm khi quest bắt đầu
+    public override void StartQuest()
     {
-        Debug.Log("Bắt đầu: " + questName);         // Log tên quest
-        currentStayTime = 0f;                       // Reset thời gian đứng
-        playerInside = null;                        // Reset người trong vùng
+        base.StartQuest();
+        currentStayTime = 0f;
+        isPlayerInside = false;
     }
 
-    public override void UpdateQuest()              // Gọi mỗi frame khi quest đang chạy
+    public override void UpdateQuest()
     {
-        if (isCompleted) return;                    // Nếu hoàn thành thì không xử lý
-        if (target == null || players == null) return;  // Nếu dữ liệu null thì dừng
+        if (isCompleted || target == null) return;
 
-        bool anyPlayerInside = false;               // Biến kiểm tra có player nào vào vùng chưa
-        Transform found = null;                     // Player tìm được
-
-        foreach (var p in players)                  // Lặp qua tất cả player
+        bool anyPlayerInside = false;
+        foreach (var p in players)
         {
-            if (p == null) continue;                // Nếu player null → bỏ qua
-
-            if (Vector3.Distance(p.position, target.position) <= distanceNeeded)
-            {                                       // Nếu player ở gần target
-                anyPlayerInside = true;             // Đánh dấu đã có người vào
-                found = p;                          // Lưu player đó
-                break;                              // Không cần tìm nữa
-            }
-        }
-
-        if (anyPlayerInside)                        // Nếu có player đứng trong vùng
-        {
-            if (playerInside != found)              // Nếu player mới vào hoặc đổi player
+            if (p != null && Vector3.Distance(p.position, target.position) <= distanceNeeded)
             {
-                playerInside = found;               // Lưu player đang trong vùng
-                currentStayTime = 0f;               // Reset thời gian để bắt đầu tính
-            }
-
-            currentStayTime += Time.deltaTime;      // Tăng thời gian đứng trong vùng
-
-            if (currentStayTime >= stayTimeRequired) // Nếu đã đứng đủ 5 giây
-            {
-                CompleteQuest();                    // Quest hoàn thành
+                anyPlayerInside = true;
+                break;
             }
         }
-        else                                        // Không có ai trong vùng
+
+        if (anyPlayerInside)
         {
-            playerInside = null;                    // Không lưu player
-            currentStayTime = 0f;                   // Reset timer
+            isPlayerInside = true;
+            currentStayTime += Time.deltaTime;
+
+            // Cập nhật đếm ngược lên UI
+            float remain = Mathf.Max(0, stayTimeRequired - currentStayTime);
+            GameEvents.OnQuestTextChanged?.Invoke($"{questText} ({remain:F1}s)");
+
+            if (currentStayTime >= stayTimeRequired) CompleteQuest();
+        }
+        else if (isPlayerInside)
+        {
+            // RESET khi người chơi rời khỏi vùng
+            isPlayerInside = false;
+            currentStayTime = 0f;
+            GameEvents.OnQuestTextChanged?.Invoke(questText);
         }
     }
 
-    public override void CompleteQuest()            // Hàm khi quest hoàn tất
+    public override void CompleteQuest()
     {
-        if (isCompleted) return;                    // Tránh chạy lại nhiều lần
-
-        isCompleted = true;                         // Đánh dấu đã hoàn thành
-        Debug.Log("Hoàn thành: " + questName);      // Log quest
-
-        if (effect != null)                         // Nếu có hiệu ứng hoàn thành
+        isCompleted = true;
+        if (effect != null)
         {
-            GameObject fx = GameObject.Instantiate(
-                effect, target.position, Quaternion.identity);   // Spawn hiệu ứng tại target
-            GameObject.Destroy(fx, 60f);             // Tự hủy sau 3 giây
+            GameObject fx = Object.Instantiate(effect, target.position, Quaternion.identity);
+            Object.Destroy(fx, 10f);
         }
     }
 }

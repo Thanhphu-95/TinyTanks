@@ -451,6 +451,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3507996596993871272, guid: 5f87f3ffe43340e44a95c2b35416ce74, type: 3}
       insertIndex: -1
       addedObject: {fileID: 817457713}
+    - targetCorrespondingSourceObject: {fileID: 3507996596993871272, guid: 5f87f3ffe43340e44a95c2b35416ce74, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 817457716}
   m_SourcePrefab: {fileID: 100100000, guid: 5f87f3ffe43340e44a95c2b35416ce74, type: 3}
 --- !u!1001 &5657771
 PrefabInstance:
@@ -17108,6 +17111,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4315918477310891794, guid: 5f87f3ffe43340e44a95c2b35416ce74, type: 3}
   m_PrefabInstance: {fileID: 3105097}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &817457716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 817457710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 118c6b84a7edab14689687ac164cb36b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  maxHealth: 100
+  currentHealth: 0
+  barrel: {fileID: 0}
+  turret: {fileID: 0}
+  explode: {fileID: 0}
+  barrelPrefab: {fileID: 0}
+  turretPrefab: {fileID: 0}
+  explodePrefab: {fileID: 0}
+  missionUI: {fileID: 0}
+  isDead: 0
 --- !u!1001 &824001301
 PrefabInstance:
   m_ObjectHideFlags: 0

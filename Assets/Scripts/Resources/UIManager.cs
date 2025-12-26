@@ -51,35 +51,49 @@ public class UIManager : MonoBehaviour
 
         if (loadingPrefab != null)
         {
-            Debug.Log("tìm thấy loading");
             loadingScreen = Instantiate(loadingPrefab);
             DontDestroyOnLoad(loadingScreen);
-            // Tìm Slider và Text trong Loading Screen
             progressBar = loadingScreen.GetComponentInChildren<Slider>();
             progressText = loadingScreen.GetComponentInChildren<TextMeshProUGUI>();
+
+            // Đảm bảo Loading luôn hiện trên cùng
+            Canvas c = loadingScreen.GetComponent<Canvas>();
+            if (c != null) { c.renderMode = RenderMode.ScreenSpaceOverlay; c.sortingOrder = 999; }
         }
 
+        // Luôn đảm bảo thời gian chạy khi đang load
         Time.timeScale = 1f;
+
         AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
-        operation.allowSceneActivation = false; // Chặn để hiện loading cho đẹp
+        operation.allowSceneActivation = false;
 
         float targetProgress = 0f;
         while (targetProgress < 1f)
         {
+            // Tăng tốc độ targetProgress nhanh hơn một chút để người chơi không chờ lâu
             float realProgress = Mathf.Clamp01(operation.progress / 0.9f);
-            targetProgress = Mathf.MoveTowards(targetProgress, realProgress, Time.deltaTime * 0.1f);
+            targetProgress = Mathf.MoveTowards(targetProgress, realProgress, Time.unscaledDeltaTime * 0.5f); // Dùng unscaledDeltaTime để an toàn
 
             if (progressBar != null) progressBar.value = targetProgress;
             if (progressText != null) progressText.text = (targetProgress * 100f).ToString("F0") + "%";
 
-            if (targetProgress >= 1f && operation.progress >= 0.9f)
+            // Khi nạp xong ngầm
+            if (operation.progress >= 0.9f && targetProgress >= 0.9f)
             {
-                operation.allowSceneActivation = true;
+                targetProgress = 1f; // Ép về 1
+                if (progressBar != null) progressBar.value = 1f;
+                if (progressText != null) progressText.text = "100%";
+
+                yield return new WaitForSecondsRealtime(0.1f); // Đợi rất ngắn
+                operation.allowSceneActivation = true; // Kích hoạt Scene mới ngay
             }
             yield return null;
         }
 
-        yield return new WaitForSeconds(0.2f);
+        // Chờ cho đến khi Scene thực sự đổi
+        while (!operation.isDone) { yield return null; }
+
+        // Xóa loading ngay lập tức khi vào Scene mới
         if (loadingScreen != null) Destroy(loadingScreen);
     }
 
@@ -98,6 +112,7 @@ public class UIManager : MonoBehaviour
     {
         if (currentPauseMenu != null)
         {
+            Time.timeScale = 1f;
             currentPauseMenu.GetComponent<PauseMenuManager>().CloseMenu();
             currentPauseMenu = null;
         }
@@ -106,6 +121,7 @@ public class UIManager : MonoBehaviour
             GameObject prefab = Resources.Load<GameObject>("UI/PauseMenuCanvas");
             if (prefab != null)
             {
+                Time.timeScale = 0f;
                 currentPauseMenu = Instantiate(prefab);
                 currentPauseMenu.GetComponent<PauseMenuManager>().OpenMenu();
             }

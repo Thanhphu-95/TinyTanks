@@ -332,7 +332,7 @@ MonoBehaviour:
   countdownText: {fileID: 3014750324663071748}
   missionText: {fileID: 6531956122221075023}
   countdownPanel: {fileID: 6492208723137927420}
-  countdownTime: 1
+  countdownTime: 5
 --- !u!1 &8036834858173911973
 GameObject:
   m_ObjectHideFlags: 0

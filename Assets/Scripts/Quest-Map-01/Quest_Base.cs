@@ -1,23 +1,26 @@
-﻿public abstract class Quest_Base      // Lớp abstract: chỉ dùng làm cha, không tạo instance trực tiếp
+﻿public abstract class Quest_Base
 {
-    public string questName;          // Tên của quest
+    public string questName;
     public string questText;
+    public bool isCompleted = false;
 
-    public bool isCompleted = false;  // Trạng thái hoàn thành của quest (mặc định là false)
-
-    protected MissionUI missionUI;
-    protected QuestTextUI questTextUI;
-    public void SetUI(MissionUI ui)
+    // THÊM ĐOẠN NÀY: Constructor nhận 1 tham số
+    public Quest_Base(string name)
     {
-        missionUI = ui;
+        this.questName = name;
     }
 
-    public void SetQuestTextUI(QuestTextUI ui)
+    // Constructor mặc định (để tránh lỗi nếu có class con không truyền tham số)
+    public Quest_Base() { }
+
+    public virtual void StartQuest()
     {
-        questTextUI = ui;
+        isCompleted = false;
+        GameEvents.OnQuestTextChanged?.Invoke(questText);
     }
 
-    public abstract void StartQuest();   // Hàm bắt đầu quest — class con bắt buộc phải override
-    public abstract void UpdateQuest();  // Hàm update mỗi frame — class con bắt buộc phải override
-    public abstract void CompleteQuest(); // Hàm khi quest hoàn tất — class con bắt buộc phải override
+    public abstract void UpdateQuest();
+    public abstract void CompleteQuest();
+
+    public void SetQuestTextUI(QuestTextUI ui) { }
 }
