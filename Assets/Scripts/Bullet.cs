@@ -40,6 +40,7 @@ public class Bullet : MonoBehaviour
 
             PlayerHealth playerHP = collision.gameObject.GetComponent<PlayerHealth>();
             EnemyHealth enemyHealth = collision.gameObject.GetComponent<EnemyHealth>();
+            BossHealth bossHealth = collision.gameObject.GetComponent<BossHealth>();
 
             if (enemyHealth != null)
             {
@@ -48,6 +49,10 @@ public class Bullet : MonoBehaviour
             if (playerHP != null)
             {
                 playerHP.TakeDamage(damage);
+            }
+            if (bossHealth != null)
+            {
+                bossHealth.TakeDamage(damage);
             }
             Explode();
         }

@@ -1,28 +1,10 @@
 ﻿using UnityEngine;
 
-public class UmbrellaShieldItem : SupportItem
+public class UmbrellaShieldItem : MonoBehaviour
 {
-    public GameObject shieldPrefab;
-    private GameObject shieldInstance;
-    public Transform shieldPoint;
-
-    public override void Activate(GameObject target)
+    private void OnCollisionEnter(Collision collision)
     {
-        Transform turret = target.transform.Find("Turret");
 
-        shieldInstance = Instantiate(shieldPrefab, shieldPoint);
-
-        shieldInstance.transform.localPosition = new Vector3(0f, 0f, -0.5f);
-
-        Quaternion customRotation = Quaternion.Euler(80f, 0f, 0f);
-        shieldInstance.transform.localRotation = customRotation;
-
-        //Destroy(shieldInstance, duration);
-        //Destroy(gameObject);
-    }
-
-    void OnCollisionEnter(Collision collision)
-    {
         if (collision.gameObject.CompareTag("BulletEnemy")) // Kiểm tra đối tượng va chạm là viên đạn
         {
             Rigidbody bulletRb = collision.gameObject.GetComponent<Rigidbody>();

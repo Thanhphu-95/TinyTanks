@@ -33,6 +33,7 @@ public class UFOController : MonoBehaviour
 
     void Update()
     {
+
         if (target == null) return;
 
         float dist = Vector3.Distance(transform.position, target.position);

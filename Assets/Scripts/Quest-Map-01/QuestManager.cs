@@ -41,13 +41,13 @@ public class QuestManager : MonoBehaviour
     private void SetupQuestChain()
     {
         // Bước 1: Đến điểm A và giữ trong 5 giây
-        quests.Add(new QuestReachPoint("Điểm A", players, pointA, checkpointEffect, 5f));
+        quests.Add(new QuestReachPoint("Chiếm vị trí sân bay", players, pointA, checkpointEffect, 5f));
 
         // Bước 2: Đến điểm B và giữ trong 5 giây
-        quests.Add(new QuestReachPoint("Điểm B", players, pointB, checkpointEffect, 5f));
+        quests.Add(new QuestReachPoint("tấng công vị trí tiếp theo", players, pointB, checkpointEffect, 5f));
 
         // Bước 3: Spawn Boss
-        spawnBossQuest = new QuestSpawnBoss("CẢNH BÁO: BOSS XUẤT HIỆN!", bossPrefab, bossSpawnPoint);
+        spawnBossQuest = new QuestSpawnBoss("CẢNH BÁO: Viện binh của kẻ thù đã đến, hay tiêu diệt chúng", bossPrefab, bossSpawnPoint);
         quests.Add(spawnBossQuest);
 
         // Bước cuối: Rút lui về điểm C (giữ 1 giây)

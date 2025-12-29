@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 958113171820727816}
   - component: {fileID: 5411361768011313848}
   - component: {fileID: -7978123474054935813}
+  - component: {fileID: -3393093019138199338}
   m_Layer: 11
   m_Name: BulletPlayer
   m_TagString: Untagged
@@ -167,3 +168,15 @@ MonoBehaviour:
   explosionAffectLayers:
     serializedVersion: 2
     m_Bits: 64823
+--- !u!114 &-3393093019138199338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7836419709001823228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 611d79c994de70f4e81e5d97beeb99a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BulletDirectionManager

@@ -53,4 +53,6 @@ public class HealthPickup : MonoBehaviour
             playerHealth.Heal(1);
         }
     }
+
+
 }

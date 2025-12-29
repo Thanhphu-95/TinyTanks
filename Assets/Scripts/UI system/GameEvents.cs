@@ -12,7 +12,7 @@ public static class GameEvents
     public static System.Action<int> OnBossHealthChanged; // sự kiện maus boss
     public static System.Action<float> OnQuestTimeUpdate; //sự kiện về time quest
     public static Action<string> OnQuestTextChanged; // nội dung nhiệm vụ
-    public static System.Action<List<ItemData>> OnInventoryChanged;
+  
 
 
     public static void RaiseMapSelected(string sceneName)// Hàm tiện ích để kích hoạt sự kiện này

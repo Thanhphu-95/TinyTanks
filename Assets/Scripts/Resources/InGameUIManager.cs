@@ -74,8 +74,7 @@ public class InGameUIManager : MonoBehaviour
         // Đảm bảo thời gian chạy bình thường
         Time.timeScale = 1f;
 
-        // 1. Hiện lại HUD chơi game (Tên phải khớp chính xác với Object trong Prefab)
-        // Lưu ý: Trong code trước bạn để "InGame_HUD", nhưng trong Hierarchy thường là "InGame"
+
         Transform inGame = hudInstance.transform.Find("InGame");
         if (inGame) inGame.gameObject.SetActive(true);
 

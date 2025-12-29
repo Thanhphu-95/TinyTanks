@@ -6,7 +6,8 @@ public class MenuManager : MonoBehaviour
     [Header("UI Panels")]
     public GameObject mainMenuPanel;                        // Kéo Panel Menu chính vào đây
     public GameObject mapSelectionPanel;                    // Kéo Panel Chọn Map vào đây
-    
+    private GameObject optionsPrefab;
+
     private void OnEnable()// Khi Object này được kích hoạt
     {
         GameEvents.OnMapSelected += HandleMapSelected;      // Đăng ký: "Khi có map được chọn, gọi tôi"
@@ -45,7 +46,19 @@ public class MenuManager : MonoBehaviour
         mainMenuPanel.SetActive(true);                      // Hiện menu chính
         mapSelectionPanel.SetActive(false);                 // Ẩn menu chọn map
     }
+    public void ShowOptions()
+    {
+        Debug.Log("ko tìm thấy setting");
+        // Bật Canvas Setting lên
+        if (optionsPrefab == null)
+        {
+            GameObject prefab = Resources.Load<GameObject>("UI/Setting");
+            Debug.Log("bật setting");
+            optionsPrefab = Instantiate(prefab);
+            
 
+        }
+    }
     public void QuitGame()                                  // Gọi khi bấm nút "Exit"
     {
         Debug.Log("Thoát game");

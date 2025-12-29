@@ -18,7 +18,7 @@ public class QuestReachPoint : Quest_Base
         this.target = target;
         this.stayTimeRequired = stayTime;
         this.effect = effectPrefab;
-        this.questText = "Nhiệm vụ: Đến " + name;
+        this.questText = "Nhiệm vụ: " + name;
     }
 
     public override void StartQuest()

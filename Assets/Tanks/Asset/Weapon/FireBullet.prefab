@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1348785535055769460}
   - component: {fileID: 227334739672494507}
   - component: {fileID: 8005479530388253487}
+  - component: {fileID: -7178382362791092636}
   m_Layer: 11
   m_Name: FireBullet
   m_TagString: Untagged
@@ -160,3 +161,15 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   explosionPrefab: {fileID: 1582275357731197809, guid: 5334360cd0cfad84bbf6855beaf10de4, type: 3}
+--- !u!114 &-7178382362791092636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1795855935917702705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 611d79c994de70f4e81e5d97beeb99a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BulletDirectionManager
