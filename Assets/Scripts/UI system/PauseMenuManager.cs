@@ -4,43 +4,58 @@ using UnityEngine.SceneManagement;
 public class PauseMenuManager : MonoBehaviour
 {
     [SerializeField] private GameObject mainPanel;
-    [SerializeField] private GameObject optionsPanel;
+    private GameObject optionsInstance; // Lưu đối tượng đã tạo ra để quản lý
 
     public void OpenMenu()
     {
-        if (mainPanel == null || optionsPanel == null) return;
-
+        if (mainPanel == null) return;
         mainPanel.SetActive(true);
-        optionsPanel.SetActive(false);
         Time.timeScale = 0f;
     }
 
     public void CloseMenu()
     {
         Time.timeScale = 1f;
+        // Nếu đang mở options thì xóa nó luôn
+        if (optionsInstance != null) Destroy(optionsInstance);
         Destroy(gameObject);
     }
 
-    // --- HÀM RESTART MỚI THÊM ---
     public void RestartGame()
     {
         Time.timeScale = 1f;
-
-
         string currentScene = SceneManager.GetActiveScene().name;
         UIManager.Instance.ChangeScene(currentScene);
     }
 
     public void ShowOptions()
     {
-        mainPanel.SetActive(false);
-        optionsPanel.SetActive(true);
+        // 1. Chỉ Load và tạo nếu nó chưa tồn tại
+        if (optionsInstance == null)
+        {
+            // Load prefab của bảng Setting (đã làm ở các bước trước)
+            GameObject prefab = Resources.Load<GameObject>("UI/Setting");
+            if (prefab != null)
+            {
+                optionsInstance = Instantiate(prefab);
+            }
+        }
+        Time.timeScale = 0f;
+        // 2. Ẩn menu chính và hiện bảng setting
+        if (optionsInstance != null)
+        {
+            mainPanel.SetActive(false);
+            optionsInstance.SetActive(true);
+
+            // Đảm bảo nút Back trong bảng Setting có thể tìm lại Menu Pause này
+            // Bạn có thể dùng Event hoặc tìm script AudioSettingsController để gán sự kiện
+        }
     }
 
     public void BackToMainPause()
     {
-        optionsPanel.SetActive(false);
         mainPanel.SetActive(true);
+        // Nếu dùng Destroy bảng setting khi đóng thì ở đây không cần làm gì thêm
     }
 
     public void ExitToMainMenu()

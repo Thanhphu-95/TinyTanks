@@ -20,4 +20,5 @@ public class AudioDataLibrary : ScriptableObject
     public AudioClip EnginePlayer;
     public AudioClip EngineEnemy;
     public AudioClip EngineUfO;
+    public AudioClip ClickButton;
 }

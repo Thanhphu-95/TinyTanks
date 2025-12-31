@@ -20,6 +20,13 @@ public class BossAttack : MonoBehaviour
     private float arcCooldownTimer = 0f; // Bộ đếm thời gian nội bộ
     public Transform firePointAttack2;
 
+    [Header("Kỹ năng phase 3: máy bay rãi thảm")]
+    public GameObject dronePrefab;
+    public Transform[] droneSpawnPoints; // Mảng chứa 4 điểm (Left, Right, Front, Back)
+    public float droneUltimateCooldown = 20f;
+    private float droneTimer = 0f;
+
+
     public void SingleShot()
     {
         // 1. Cập nhật bộ đếm thời gian chu kỳ (Tổng 5 giây: 3s bắn + 2s nghỉ)
@@ -43,26 +50,49 @@ public class BossAttack : MonoBehaviour
         }
         // Sau 3s (tức là từ giây thứ 3.1 đến 5.0), hàm này sẽ không làm gì cả -> Tự động nghỉ 2s
     }
-    public void LaunchArcShot(Transform targetPlayer)
+    public void LaunchMissile(Transform targetPlayer) // Đổi tên để dễ phân biệt với đạn vòng cung
     {
-        // Kiểm tra nếu chưa đủ thời gian chờ thì không bắn
+        // 1. Kiểm tra Cooldown
         if (Time.time < arcCooldownTimer || targetPlayer == null) return;
 
-        // Sinh đạn
-        GameObject bulletObj = Instantiate(arcBulletPrefab, firePointAttack2.position, Quaternion.identity);
+        // 2. Sinh tên lửa (Dùng Quaternion.LookRotation để mũi tên lửa hướng về phía trước lúc mới bắn)
+        GameObject bulletObj = Instantiate(arcBulletPrefab, firePointAttack2.position, firePointAttack2.rotation);
 
-        ArcBullet arcScript = bulletObj.GetComponent<ArcBullet>();
-        if (arcScript != null)
+        // 3. Lấy script và khởi tạo bằng TRANSFORM
+        // Giả sử script trên viên mới là HomingMissile
+        HomingMissile missileScript = bulletObj.GetComponent<HomingMissile>();
+        if (missileScript != null)
         {
-            arcScript.Initialize(firePointAttack2.position, targetPlayer.position);
+            // QUAN TRỌNG: Truyền targetPlayer (Transform) để đạn có thể "đuổi" theo vị trí mới
+            missileScript.Initialize(targetPlayer);
         }
 
-        // Cập nhật thời điểm được bắn lần tiếp theo
-        arcCooldownTimer = Time.time + arcCooldown;     
+        // 4. Cập nhật thời điểm được bắn lần tiếp theo
+        arcCooldownTimer = Time.time + arcCooldown;
     }
 
+    public void SuiscideDrones(Transform targetPlayer)
+    {
+        if (Time.time < droneTimer || targetPlayer == null) return;
 
-    private void FireAlternating()
+        // Vòng lặp chạy qua 4 điểm để sinh Drone
+        for (int i = 0; i < droneSpawnPoints.Length; i++)
+        {
+            if (droneSpawnPoints[i] == null) continue;
+
+            GameObject droneObj = Instantiate(dronePrefab, droneSpawnPoints[i].position, droneSpawnPoints[i].rotation);
+
+            HomingMissile script = droneObj.GetComponent<HomingMissile>();
+            if (script != null)
+            {
+                script.Initialize(targetPlayer);
+            }
+        }
+
+        droneTimer = Time.time + droneUltimateCooldown;
+    }
+
+    private void FireAlternating() // hàm đổi nòng
     {
         // Chọn nòng súng
         Transform currentPoint = isLeftTurn ? firePointLeft : firePointRight;

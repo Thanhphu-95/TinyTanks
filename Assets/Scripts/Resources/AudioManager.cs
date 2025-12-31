@@ -56,7 +56,20 @@ public class AudioManager : MonoBehaviour
     public void PlaySFX(AudioClip clip)
     {
         if (clip == null) return;
-        // PlayOneShot giúp phát nhiều âm thanh chồng lên nhau mà không ngắt quãng
+
+        // 1. Ép Object SFX_Player phải Active
+        if (!sfxSource.gameObject.activeSelf)
+        {
+            sfxSource.gameObject.SetActive(true);
+        }
+
+        // 2. Ép Component AudioSource phải Enabled (Quan trọng nhất)
+        if (!sfxSource.enabled)
+        {
+            sfxSource.enabled = true;
+        }
+
+        // 3. Bây giờ mới phát âm thanh
         sfxSource.PlayOneShot(clip);
     }
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
