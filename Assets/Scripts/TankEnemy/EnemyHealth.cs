@@ -29,6 +29,10 @@ public class EnemyHealth : MonoBehaviour
     }
     private void Die()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.library.Explode);
+        }
         if (isDead) return;
         isDead = true;
         rb.isKinematic = true;

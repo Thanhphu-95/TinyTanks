@@ -9,6 +9,7 @@ TagManager:
   - PlayerShield
   - BulletEnemy
   - FxTemporaire
+  - Ground
   layers:
   - Default
   - TransparentFX

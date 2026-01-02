@@ -30,6 +30,10 @@ public class PlayerHealth : MonoBehaviour
 
     private void Die()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.library.Explode);
+        }
         if (isDead) return;
         isDead = true;
         GetComponent<PlayerMovement>().enabled = false;

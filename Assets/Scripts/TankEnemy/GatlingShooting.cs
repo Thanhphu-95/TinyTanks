@@ -28,7 +28,10 @@ public class GatlingShooting : MonoBehaviour
     public void Shoot()
     {
         Debug.Log("bắn đạn");
-
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.library.ShootEnemyBullet);
+        }
         if (target == null)
         {
             Debug.Log("Không tìm thấy mục tiêu (target) để bắn!");

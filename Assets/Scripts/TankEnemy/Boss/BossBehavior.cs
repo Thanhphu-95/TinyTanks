@@ -3,9 +3,8 @@ using UnityEngine;
 public class BossBehavior : MonoBehaviour
 {
     private BossHealth health;
-    private BossMove bossMove;
     private BossAttack attack;
-
+    private BossMove bossMove;
     public Transform player;
     public GameObject sheild;
 
@@ -17,7 +16,12 @@ public class BossBehavior : MonoBehaviour
     }
     void Start()
     {
+        GameObject playerObj = GameObject.FindWithTag("Player");
 
+        if (playerObj != null)
+        {
+            player = playerObj.transform;
+        }
     }
 
     // Update is called once per frame
@@ -25,18 +29,20 @@ public class BossBehavior : MonoBehaviour
     {
         int curentHeal = health.currentHealth;
         if (health.isDead || player == null) return;
-        
+        bossMove.HandleTurret();
         if (curentHeal >= health.maxHealth * 0.9)
         {
-            bossMove.TurretLookAt();
+            
             Phase01();
         }
         else if (curentHeal > health.maxHealth *0.5)
         {
+            bossMove.HandleMovement();
             Phase02();
         }
         else
         { 
+            bossMove.HandleMovement();
             Phase03();
         }
 
@@ -47,23 +53,22 @@ public class BossBehavior : MonoBehaviour
 
     }
 
-
-
     private void Phase01()
     {
-        attack.SuiscideDrones(player);
-
-
+        attack.SingleShot();
     }
-
 
     private void Phase02()
     {
-            attack.LaunchMissile(player);
+        
+        attack.SmokePoof();
+        attack.ArcBullet(player);
     }
 
     private void Phase03()
     {
-
+            attack.SuiscideDrones(player);
+        attack.SmokePoof();
+        attack.ArcBullet(player);
     }
 }

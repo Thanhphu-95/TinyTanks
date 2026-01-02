@@ -1,106 +1,110 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
+using System.Collections.Generic;
 
 public class BossMove : MonoBehaviour
 {
+    [Header("--- Di chuyển ---")]
+    public List<Transform> movePoints = new List<Transform>();
+    public float moveSpeed = 5f;
+    public float rotateSpeed = 150f;
+    public float angleThreshold = 5f;
+
+    [Header("--- Tháp súng ---")]
+    public Transform turretTransform; // Kéo tháp súng vào đây
+    public float turretRotateSpeed = 5f; // Tốc độ xoay tháp súng
+    public Transform playerTransform;  // Kéo Player vào đây (hoặc tìm bằng code)
+
     private NavMeshAgent agent;
+    private int currentIndex = -1;
 
-    [Header("Cấu hình Thân xe (Chassis)")]
-    public Transform bodyTransform; // Kéo Object Thân xe vào đây
-    public float bodyTurnSpeed = 5f;
-    public float moveSpeed = 1f;
-
-    [Header("Cấu hình Tháp pháo (Turret)")]
-    public Transform turretTransform;
-    public float turretTurnSpeed = 10f;
-    public Transform player;
-
-    [Header("Khoảng cách & Di chuyển")]
-    public float safeDistance = 5f;
-    public float distanceTolerance = 2f;
-    public float strafeChangeInterval = 2f;
-
-    private int strafeDirection = 1;
-    private float strafeTimer = 0f;
-
-    private void Start()
+    void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
-        if (agent != null)
+        foreach (Transform point in movePoints)
         {
-            agent.speed = moveSpeed;
-            // Tắt Update Rotation để chúng ta tự điều khiển thân xe xoay mượt hơn
-            agent.updateRotation = false;
-
-            NavMeshHit hit;
-            if (NavMesh.SamplePosition(transform.position, out hit, 2.0f, NavMesh.AllAreas))
-                agent.Warp(hit.position);
+            if (point != null)
+            {
+                point.SetParent(null); // Đưa về gốc (không có cha)
+            }
         }
+
+        agent = GetComponent<NavMeshAgent>();
+        agent.updateRotation = false; // Tự xoay thân xe
+        agent.speed = 0;
+
+        // Tự tìm Player nếu chưa kéo vào Inspector
+        if (playerTransform == null)
+            playerTransform = GameObject.FindGameObjectWithTag("Player")?.transform;
+
+        // Kiểm tra NavMesh trước khi bắt đầu
+        if (agent.isOnNavMesh)
+            PickNextPoint();
+        else
+            Debug.LogError("Boss chưa nằm trên NavMesh! Hãy kéo nó sát mặt đất.");
     }
 
     void Update()
     {
-        if (player == null || agent == null || !agent.isOnNavMesh) return;
+        if (!agent.isOnNavMesh || !agent.isActiveAndEnabled) return;
 
-        TurretLookAt();     // Tháp pháo nhắm Player
-        HandleTankAI();    // Thân xe di chuyển và xoay
+       
+        
     }
 
-    public void HandleTankAI()
+    // ==========================
+    // 🚗 LOGIC DI CHUYỂN THÂN XE
+    // ==========================
+    public void HandleMovement()
     {
-        float distance = Vector3.Distance(transform.position, player.position);
-        Vector3 targetDestination = transform.position;
+        Vector3 targetDir = agent.steeringTarget - transform.position;
+        targetDir.y = 0;
 
-        // 1. LOGIC TÍNH ĐIỂM ĐẾN (TIẾN - LÙI - NGANG)
-        if (distance > safeDistance + distanceTolerance)
+        if (targetDir.magnitude > 0.1f)
         {
-            targetDestination = player.position; // Tiến
-        }
-        else if (distance < safeDistance - distanceTolerance)
-        {
-            Vector3 dirAway = (transform.position - player.position).normalized;
-            targetDestination = transform.position + dirAway * 6f; // Lùi
-        }
-        else
-        {
-            strafeTimer += Time.deltaTime;
-            if (strafeTimer >= strafeChangeInterval)
-            {
-                strafeDirection = Random.value > 0.5f ? 1 : -1;
-                strafeTimer = 0f;
-            }
-            // Di chuyển ngang dựa trên hướng vuông góc với Player
-            Vector3 sideDir = Vector3.Cross(Vector3.up, (player.position - transform.position).normalized);
-            targetDestination = transform.position + (sideDir * strafeDirection * 5f);
+            Quaternion targetRot = Quaternion.LookRotation(targetDir);
+            float angle = Quaternion.Angle(transform.rotation, targetRot);
+
+            // Thân xe xoay hướng về điểm di chuyển tiếp theo
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotateSpeed * Time.deltaTime);
+
+            // Chỉ chạy khi thân xe đã nhìn gần đúng hướng
+            agent.speed = (angle < angleThreshold) ? moveSpeed : 0;
         }
 
-        // 2. THỰC THI DI CHUYỂN
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(targetDestination, out hit, 5f, NavMesh.AllAreas))
+        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.1f)
         {
-            agent.SetDestination(hit.position);
-            agent.isStopped = false;
-        }
-
-        // 3. XOAY THÂN XE THEO HƯỚNG DI CHUYỂN (Chassis Rotation)
-        // Xe tăng sẽ xoay mặt về hướng mà NavMeshAgent đang muốn đi
-        if (agent.velocity.magnitude > 0.1f)
-        {
-            Quaternion lookRotation = Quaternion.LookRotation(agent.velocity.normalized);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * bodyTurnSpeed);
+            PickNextPoint();
         }
     }
 
-    public void TurretLookAt()
+    // ==========================
+    // 🔫 LOGIC XOAY THÁP SÚNG
+    // ==========================
+    public void HandleTurret()
     {
-        if (turretTransform == null) return;
-        Vector3 direction = (player.position - turretTransform.position);
-        direction.y = 0;
+        if (turretTransform == null || playerTransform == null) return;
 
-        if (direction != Vector3.zero)
+        // Tính hướng từ tháp súng tới Player
+        Vector3 targetDir = playerTransform.position - turretTransform.position;
+        targetDir.y = 0; // Giữ tháp súng xoay ngang (không bị chúi lên/xuống)
+
+        if (targetDir.magnitude > 0.1f)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            turretTransform.rotation = Quaternion.RotateTowards(turretTransform.rotation, targetRotation, turretTurnSpeed * Time.deltaTime);
+            Quaternion targetRot = Quaternion.LookRotation(targetDir);
+
+            // Xoay tháp súng mượt mà về phía Player
+            turretTransform.rotation = Quaternion.Slerp(
+                turretTransform.rotation,
+                targetRot,
+                turretRotateSpeed * Time.deltaTime
+            );
         }
+    }
+
+    void PickNextPoint()
+    {
+        if (movePoints.Count == 0) return;
+        currentIndex = (currentIndex + 1) % movePoints.Count;
+        agent.SetDestination(movePoints[currentIndex].position);
     }
 }

@@ -27,7 +27,7 @@ public class QuestManager : MonoBehaviour
             players = new List<Transform>();
             foreach (var go in GameObject.FindGameObjectsWithTag("Player"))
                 players.Add(go.transform);
-        }
+        }                                       
 
         SetupQuestChain();
 

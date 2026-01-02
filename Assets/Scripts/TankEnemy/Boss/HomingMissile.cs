@@ -7,6 +7,8 @@ public class HomingMissile : MonoBehaviour
     private float timer = 0f;
     private Vector3 randomDirection;
     private bool isInitialized = false;
+    public GameObject ExplodeVFX;
+    public GameObject ExplodeGroundVFX;
 
     [Header("Cấu hình thời gian")]
     public float duration = 4.0f;
@@ -81,7 +83,13 @@ public class HomingMissile : MonoBehaviour
         PlayerHealth playerHP = other.gameObject.GetComponent<PlayerHealth>();
         if (other.CompareTag("Player"))
         {
+            Instantiate(ExplodeVFX, transform.position, Quaternion.identity);
             playerHP.TakeDamage(20);
+            Explode();
+        }
+        else
+        {
+            Instantiate(ExplodeGroundVFX, transform.position, Quaternion.identity);
             Explode();
         }
     }

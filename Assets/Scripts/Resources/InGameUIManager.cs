@@ -1,156 +1,189 @@
-﻿using TMPro;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
+﻿using TMPro;                                      // TextMeshPro
+using UnityEngine;                               // Unity core
+using UnityEngine.SceneManagement;               // Quản lý Scene
+using UnityEngine.UI;                            // UI (Slider)
 
-public class InGameUIManager : MonoBehaviour
+public class InGameUIManager : MonoBehaviour      // Quản lý UI trong gameplay
 {
-    public static InGameUIManager Instance { get; private set; }
+    public static InGameUIManager Instance { get; private set; } // Singleton
 
-    private GameObject hudInstance;
-    private Slider healthSlider;
-    private TextMeshProUGUI hpText;
-    private TextMeshProUGUI timerText;
-    private MissionResultUI missionResult;
+    private GameObject hudInstance;               // Instance HUD
+    private Slider healthSlider;                  // Thanh máu
+    private TextMeshProUGUI hpText;               // Text HP
+    private TextMeshProUGUI timerText;            // Text thời gian
+    private MissionResultUI missionResult;        // UI kết quả nhiệm vụ
 
-    private float targetHP;
+    private float targetHP;                       // HP mục tiêu để lerp
 
-    private void Awake()
+
+    private GameObject bossUIGroup;     // Group chứa Slider và Text của Boss
+    private Slider bossHealthSlider;    // Slider máu Boss
+    private TextMeshProUGUI bossNameText;
+    private void Awake()                          // Gọi khi object được tạo
     {
-        if (Instance == null)
+        if (Instance == null)                     // Nếu chưa có Instance
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-            LoadUI();
-            SceneManager.sceneLoaded += OnSceneLoaded;
+            Instance = this;                      // Gán instance
+            DontDestroyOnLoad(gameObject);        // Không hủy khi đổi scene
+            LoadUI();                             // Load HUD
+            SceneManager.sceneLoaded += OnSceneLoaded; // Lắng nghe sự kiện load scene
         }
-        else { Destroy(gameObject); }
+        else { Destroy(gameObject); }             // Tránh trùng manager
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode) // Khi scene load xong
     {
-        if (scene.name == "Main Scene")
+        if (scene.name == "Main Scene")           // Nếu là menu
         {
-            ShowHUD(false); // Ẩn toàn bộ UI khi ở Menu
+            ShowHUD(false);                       // Ẩn toàn bộ UI
         }
-        else
+        else                                      // Scene gameplay
         {
-            // Khi load scene chơi game (hoặc Restart)
-            PrepareUIForNewGame();
+            PrepareUIForNewGame();                // Chuẩn bị UI cho lượt chơi mới
         }
     }
 
-    private void LoadUI()
+    private void LoadUI()                         // Load prefab HUD
     {
-        GameObject prefab = Resources.Load<GameObject>("UI/InGame_HUD");
-        if (prefab == null)
+        GameObject prefab = Resources.Load<GameObject>("UI/InGame_HUD"); // Load prefab
+        if (prefab == null)                       // Không tìm thấy
         {
-            Debug.LogError("KHÔNG TÌM THẤY PREFAB TẠI: Resources/UI/InGame_HUD");
-            return;
-        }
-
-        hudInstance = Instantiate(prefab, transform);
-        hudInstance.SetActive(false);
-        healthSlider = hudInstance.GetComponentInChildren<Slider>();
-
-        hpText = FindInChild<TextMeshProUGUI>("HP_Text");
-        timerText = FindInChild<TextMeshProUGUI>("Timer_Text");
-        missionResult = hudInstance.GetComponentInChildren<MissionResultUI>(true);
-
-        if (missionResult == null)
-        {
-            Debug.LogError("CẢNH BÁO: Không tìm thấy script MissionResultUI trong Prefab HUD!");
+            Debug.LogError("KHÔNG TÌM THẤY PREFAB TẠI: Resources/UI/InGame_HUD"); // Báo lỗi
+            return;                               // Thoát
         }
 
-        // Khởi tạo trạng thái ban đầu
-        PrepareUIForNewGame();
+        hudInstance = Instantiate(prefab, transform); // Tạo HUD
+        hudInstance.SetActive(false);             // Ẩn HUD ban đầu
+        healthSlider = hudInstance.GetComponentInChildren<Slider>(); // Lấy slider máu
+
+        hpText = FindInChild<TextMeshProUGUI>("HP_Text"); // Tìm text HP
+        timerText = FindInChild<TextMeshProUGUI>("Timer_Text"); // Tìm text timer
+        missionResult = hudInstance.GetComponentInChildren<MissionResultUI>(true); // Lấy UI kết quả
+
+        if (missionResult == null)                // Nếu không có MissionResultUI
+        {
+            Debug.LogError("CẢNH BÁO: Không tìm thấy script MissionResultUI trong Prefab HUD!"); // Cảnh báo
+        }
+
+        PrepareUIForNewGame();                    // Khởi tạo trạng thái UI
+
+        Transform bUI = hudInstance.transform.Find("InGame/BossUI");
+        if (bUI != null)
+        {
+            bossUIGroup = bUI.gameObject;
+            bossHealthSlider = bUI.GetComponentInChildren<Slider>();
+            bossNameText = bUI.Find("Boss_Name_Text")?.GetComponent<TextMeshProUGUI>();
+            bossUIGroup.SetActive(false); // Luôn ẩn khi bắt đầu
+        }
     }
 
-    // ĐÂY LÀ HÀM QUAN TRỌNG NHẤT ĐỂ SỬA LỖI RESTART CỦA BẠN
-    public void ResetUI()
+    // ĐÂY LÀ HÀM QUAN TRỌNG NHẤT ĐỂ SỬA LỖI RESTART
+    public void ResetUI()                         // Reset UI khi restart
     {
-        if (hudInstance == null) return;
+        if (hudInstance == null) return;          // Chưa load HUD thì bỏ
 
-        // Đảm bảo thời gian chạy bình thường
-        Time.timeScale = 1f;
+        Time.timeScale = 1f;                      // Đảm bảo game đang chạy
 
+        Transform inGame = hudInstance.transform.Find("InGame"); // Tìm group InGame
+        if (inGame) inGame.gameObject.SetActive(true); // Hiện UI InGame
 
-        Transform inGame = hudInstance.transform.Find("InGame");
-        if (inGame) inGame.gameObject.SetActive(true);
+        if (missionResult != null) missionResult.gameObject.SetActive(false); // Ẩn EndGame
 
-        // 2. Ẩn bảng EndGame đi
-        if (missionResult != null) missionResult.gameObject.SetActive(false);
-
-        // Kích hoạt HUD tổng
-        hudInstance.SetActive(true);
+        hudInstance.SetActive(true);               // Bật HUD tổng
     }
 
-    private void OnEnable()
+    private void OnEnable()                        // Khi script được enable
     {
-        GameEvents.OnPlayerHealthChanged += HandleHealthChanged;
-        GameEvents.OnQuestTimeUpdate += HandleTimeUpdate;
+        GameEvents.OnPlayerHealthChanged += HandleHealthChanged; // Subscribe HP
+        GameEvents.OnQuestTimeUpdate += HandleTimeUpdate;        // Subscribe timer
     }
 
-    // Tách ra hàm để dễ quản lý và tránh lỗi lambda khi Unsubscribe
-    private void HandleHealthChanged(int curr, int max)
+    private void HandleHealthChanged(int curr, int max) // Khi HP thay đổi
     {
-        targetHP = curr;
-        if (healthSlider) healthSlider.maxValue = max;
-        if (hpText) hpText.text = $"{curr}/{max}";
+        targetHP = curr;                          // Set HP mục tiêu
+        if (healthSlider) healthSlider.maxValue = max; // Set max HP
+        if (hpText) hpText.text = $"{curr}/{max}";     // Cập nhật text
     }
 
-    private void HandleTimeUpdate(float time)
+    private void HandleTimeUpdate(float time)     // Khi timer cập nhật
     {
-        if (!timerText) return;
-        int m = Mathf.FloorToInt(time / 60);
-        int s = Mathf.FloorToInt(time % 60);
-        timerText.text = string.Format("{0:00}:{1:00}", m, s);
+        if (!timerText) return;                   // Không có text thì bỏ
+        int m = Mathf.FloorToInt(time / 60);      // Tính phút
+        int s = Mathf.FloorToInt(time % 60);      // Tính giây
+        timerText.text = string.Format("{0:00}:{1:00}", m, s); // Format mm:ss
     }
 
-    public void ShowHUD(bool status) { if (hudInstance) hudInstance.SetActive(status); }
-
-    public void ShowEndGame(bool isWin)
+    public void ShowHUD(bool status)               // Bật / tắt HUD
     {
-        if (missionResult) missionResult.Show(isWin);
-
-        // Ẩn nhóm InGame khi bảng EndGame hiện lên
-        Transform inGame = hudInstance.transform.Find("InGame");
-        if (inGame) inGame.gameObject.SetActive(false);
+        if (hudInstance) hudInstance.SetActive(status); // Set active HUD
     }
 
-    private void Update()
+    public void ShowEndGame(bool isWin)            // Hiện bảng kết quả
     {
-        if (healthSlider) healthSlider.value = Mathf.Lerp(healthSlider.value, targetHP, Time.deltaTime * 10f);
+        if (missionResult) missionResult.Show(isWin); // Show Win / Lose
+
+        Transform inGame = hudInstance.transform.Find("InGame"); // Tìm group InGame
+        if (inGame) inGame.gameObject.SetActive(false); // Ẩn UI InGame
     }
 
-    private T FindInChild<T>(string name) where T : Component
+    private void Update()                          // Update mỗi frame
     {
-        if (hudInstance == null) return null;
-        T[] comps = hudInstance.GetComponentsInChildren<T>(true);
-        foreach (var c in comps) if (c.gameObject.name == name) return c;
-        return null;
+        if (healthSlider)                          // Nếu có slider
+            healthSlider.value = Mathf.Lerp(healthSlider.value, targetHP, Time.deltaTime * 10f); // Lerp HP
     }
 
-    private void OnDestroy()
+    private T FindInChild<T>(string name) where T : Component // Tìm component theo tên
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-        GameEvents.OnPlayerHealthChanged -= HandleHealthChanged;
-        GameEvents.OnQuestTimeUpdate -= HandleTimeUpdate;
+        if (hudInstance == null) return null;      // Chưa có HUD
+        T[] comps = hudInstance.GetComponentsInChildren<T>(true); // Lấy toàn bộ component
+        foreach (var c in comps)                   // Duyệt từng component
+            if (c.gameObject.name == name) return c; // Trả về nếu trùng tên
+        return null;                               // Không tìm thấy
     }
 
-    public void PrepareUIForNewGame()
+    private void OnDestroy()                       // Khi object bị hủy
     {
-        if (hudInstance == null) return;
+        SceneManager.sceneLoaded -= OnSceneLoaded; // Unsubscribe scene
+        GameEvents.OnPlayerHealthChanged -= HandleHealthChanged; // Unsubscribe HP
+        GameEvents.OnQuestTimeUpdate -= HandleTimeUpdate;        // Unsubscribe timer
+    }
 
-        Time.timeScale = 1f;
+    public void PrepareUIForNewGame()              // Chuẩn bị UI cho game mới
+    {
+        if (hudInstance == null) return;           // Chưa load HUD
 
-        // Ẩn bảng kết quả
-        if (missionResult != null) missionResult.gameObject.SetActive(false);
+        Time.timeScale = 1f;                       // Đảm bảo game không pause
 
-        // Bật group InGame bên trong nhưng vẫn giữ hudInstance là FALSE
-        Transform inGame = hudInstance.transform.Find("InGame");
-        if (inGame) inGame.gameObject.SetActive(true);
+        if (missionResult != null) missionResult.gameObject.SetActive(false); // Ẩn EndGame
 
-        hudInstance.SetActive(false); // Đảm bảo nó vẫn đang ẩn
+        Transform inGame = hudInstance.transform.Find("InGame"); // Tìm group InGame
+        if (inGame) inGame.gameObject.SetActive(true); // Bật UI InGame
+
+        hudInstance.SetActive(false);               // Giữ HUD đang ẩn
+    }
+
+    public void InitBossHealthBar(string name, float startPercent)
+    {
+        if (bossUIGroup == null) return;
+
+        bossUIGroup.SetActive(true);
+        if (bossNameText) bossNameText.text = name;
+        if (bossHealthSlider) bossHealthSlider.value = startPercent;
+    }
+
+    // Hàm cập nhật giá trị máu Boss
+    public void UpdateBossHealth(float percent)
+    {
+        if (bossHealthSlider)
+        {
+            // Bạn có thể gán trực tiếp hoặc dùng Lerp giống thanh máu Player
+            bossHealthSlider.value = percent;
+        }
+    }
+
+    // Hàm ẩn thanh máu khi Boss chết
+    public void HideBossHealthBar()
+    {
+        if (bossUIGroup) bossUIGroup.SetActive(false);
     }
 }

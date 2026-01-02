@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using TMPro; // Thêm namespace này để đổi chữ nếu cần
+using TMPro; 
 
 public class MissionResultUI : MonoBehaviour
 {

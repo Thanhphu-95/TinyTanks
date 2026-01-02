@@ -16,9 +16,12 @@ public class AudioDataLibrary : ScriptableObject
     [Header("Hiệu ứng SFX")]
     public AudioClip Pick_Up;
     public AudioClip ShootBullet;
+    public AudioClip ShootEnemyBullet;
     public AudioClip Explode;
     public AudioClip EnginePlayer;
     public AudioClip EngineEnemy;
     public AudioClip EngineUfO;
     public AudioClip ClickButton;
+    public AudioClip bossSoot;
+    public AudioClip fireZone;
 }

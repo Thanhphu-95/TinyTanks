@@ -4,6 +4,8 @@ public class BossBullet : MonoBehaviour
 {
     public float speed = 5f; // Tốc độ chậm (chỉnh thấp xuống để lơ lửng)
     public float lifeTime = 5f; // Tự hủy để tránh nặng máy
+    public GameObject ExplosioVFX;
+    
 
     void Start()
     {
@@ -24,6 +26,7 @@ public class BossBullet : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerHP.TakeDamage(20);
+            Instantiate(ExplosioVFX, transform.position, Quaternion.identity);
             // Gây sát thương cho Player ở đây
             Destroy(gameObject);
         }

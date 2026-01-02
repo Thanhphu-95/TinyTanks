@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 4465833721041923226}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.244, y: 1.62, z: 6.326}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -126,3 +126,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ArcBullet
   duration: 3
   height: 8
+  fragmentPrefab: {fileID: 116757732855010013, guid: 2447111e2b7b67f4cb57b1b410684fc3, type: 3}
+  fragmentCount: 6
+  fragmentSpeed: 10

@@ -16,6 +16,39 @@ public class BossHealth : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
+
+        // Đăng ký sự kiện
+        OnHealthPercentChanged += HandleHealthUI;
+        OnDeath += HandleBossDeath;
+
+        // Khởi tạo UI trên màn hình (Ví dụ tên Boss là "UFO MOTHER SHIP")
+        if (InGameUIManager.Instance != null)
+        {
+            InGameUIManager.Instance.InitBossHealthBar("UFO MOTHER SHIP", 1f);
+        }
+    }
+    private void HandleHealthUI(float percent)
+    {
+        if (InGameUIManager.Instance != null)
+        {
+            InGameUIManager.Instance.UpdateBossHealth(percent);
+        }
+    }
+
+    private void HandleBossDeath()
+    {
+        if (InGameUIManager.Instance != null)
+        {
+            InGameUIManager.Instance.HideBossHealthBar();
+        }
+        // Các logic nổ tung, rơi quà...
+    }
+
+    private void OnDestroy()
+    {
+        // Hủy đăng ký để tránh lỗi bộ nhớ
+        OnHealthPercentChanged -= HandleHealthUI;
+        OnDeath -= HandleBossDeath;
     }
 
     // Hàm nhận sát thương
@@ -40,6 +73,10 @@ public class BossHealth : MonoBehaviour
 
     private void Die()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.library.Explode);
+        }
         isDead = true;
         OnDeath?.Invoke();
         Debug.Log("Boss Die!");
