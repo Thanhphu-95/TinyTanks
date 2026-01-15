@@ -21,4 +21,28 @@ public static class GameEvents
     }
 
     
+    public static Action<bool> OnShieldStatusChanged;// Sự kiện thay đổi trạng thái khiên
+    public static void RaiseShieldStatusChanged(bool hasShield)
+    {
+        OnShieldStatusChanged?.Invoke(hasShield);
+    }
+    
+    public static Action<bool> OnHealthItemStatusChanged;// Sự kiện thay đổi trạng thái hồi máu
+    public static void RaiseHealthItemStatusChanged(bool hasHealth)
+    {
+        OnHealthItemStatusChanged?.Invoke(hasHealth);
+    }
+
+    public static Action<bool> OnAcidBulletCountChanged;
+    public static void RaiseAcidBulletStatusChanged(bool hasFire)
+    {
+        OnAcidBulletCountChanged?.Invoke(hasFire);
+    }
+
+    public static Action<bool> OnFireBulletStatusChanged;
+    public static void RaiseFireBulletStatusChanged(bool hasFire)
+    {
+        OnFireBulletStatusChanged?.Invoke(hasFire);
+    }
+
 }

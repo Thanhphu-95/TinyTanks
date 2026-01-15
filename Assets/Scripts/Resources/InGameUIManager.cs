@@ -141,7 +141,7 @@ public class InGameUIManager : MonoBehaviour      // Quản lý UI trong gamepla
         return null;                               // Không tìm thấy
     }
 
-    private void OnDestroy()                       // Khi object bị hủy
+    private void OnDisable()                       // Khi object bị hủy
     {
         SceneManager.sceneLoaded -= OnSceneLoaded; // Unsubscribe scene
         GameEvents.OnPlayerHealthChanged -= HandleHealthChanged; // Unsubscribe HP

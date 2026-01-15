@@ -5,6 +5,8 @@ public class EnemyHealth : MonoBehaviour
     public int health;
     public int currentHealth;
     public GameObject explode;
+    public GameObject fire;
+    public Transform pointFire;
 
 
     [Header("Die")]
@@ -21,7 +23,15 @@ public class EnemyHealth : MonoBehaviour
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, health);
         Debug.Log("Enemy Damaged: -" + amount + " | Enemy HP: " + currentHealth);
+        if (currentHealth <= health/2)
+        {
+            if (pointFire.childCount == 0)
+            {
+                GameObject flame = Instantiate(fire, pointFire.position, pointFire.rotation);
+                flame.transform.SetParent(pointFire);
+            }
 
+        }
         if (currentHealth <= 0)
         {
             Die();

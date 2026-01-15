@@ -366,6 +366,8 @@ MonoBehaviour:
   health: 20
   currentHealth: 0
   explode: {fileID: 4893767420844493718, guid: e9ebc9689ce4dd24c86e0e3309cb75c8, type: 3}
+  fire: {fileID: 4998358088077920916, guid: 60adf0f2cf323b740a123ab5512b6ec1, type: 3}
+  pointFire: {fileID: 6662970890441766636}
 --- !u!1 &3533090228502635812
 GameObject:
   m_ObjectHideFlags: 0

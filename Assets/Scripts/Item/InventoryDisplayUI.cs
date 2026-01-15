@@ -23,16 +23,44 @@ public class InventoryDisplayUI : MonoBehaviour
         if (iconAcid) iconAcid.SetActive(false);
         if (iconFire) iconFire.SetActive(false);
     }
-
-    void Update()
+    private void OnEnable()
     {
-        if (itemManager == null) return;
+        // Đăng ký lắng nghe: "Khi nào có sự kiện Shield thay đổi, hãy gọi hàm UpdateShieldUI"
+        GameEvents.OnShieldStatusChanged += UpdateShieldUI;
+        GameEvents.OnHealthItemStatusChanged += UpdateHealthUI;
+        GameEvents.OnAcidBulletCountChanged += UpdateAcidUI;
+        GameEvents.OnFireBulletStatusChanged += UpdateFireUI;
+    }
+    private void OnDisable()
+    {
+        // Hủy đăng ký để tránh lỗi bộ nhớ
+        GameEvents.OnShieldStatusChanged -= UpdateShieldUI;
+        GameEvents.OnHealthItemStatusChanged -= UpdateHealthUI;
+        GameEvents.OnAcidBulletCountChanged -= UpdateAcidUI;
+        GameEvents.OnFireBulletStatusChanged -= UpdateFireUI;
 
-        // Cập nhật trạng thái hiển thị dựa trên biến bool trong ItemManager
-        // Sử dụng toán tử điều kiện để bật/tắt Active
-        if (iconShield) iconShield.SetActive(itemManager.CanUseShield());
-        if (iconHealth) iconHealth.SetActive(itemManager.CanUseHealth());
-        if (iconAcid) iconAcid.SetActive(itemManager.CanUseAcid());
-        if (iconFire) iconFire.SetActive(itemManager.CanUseFire());
+    }
+    private void UpdateShieldUI(bool hasShield)
+    {
+        if (iconShield != null)
+        {
+            iconShield.SetActive(hasShield);
+            Debug.Log("UI: Cập nhật trạng thái khiên -> " + hasShield);
+        }
+    }
+    private void UpdateHealthUI(bool hasHealth)
+    {
+        if (iconHealth != null)
+        {
+            iconHealth.SetActive(hasHealth);
+        }
+    }
+    private void UpdateAcidUI(bool hasAcid)
+    {
+        if (iconAcid != null) iconAcid.SetActive(hasAcid);
+    }
+    private void UpdateFireUI(bool hasFire)
+    {
+        if (iconFire != null) iconFire.SetActive(hasFire);
     }
 }

@@ -60,14 +60,15 @@ public class BossBehavior : MonoBehaviour
 
     private void Phase02()
     {
-        
+        attack.SingleShot();
         attack.SmokePoof();
         attack.ArcBullet(player);
     }
 
     private void Phase03()
     {
-            attack.SuiscideDrones(player);
+        attack.SingleShot();
+        attack.SuiscideDrones(player);
         attack.SmokePoof();
         attack.ArcBullet(player);
     }

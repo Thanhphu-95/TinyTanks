@@ -3313,7 +3313,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d41dae0a091e5a14c983f00b6869366a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossHealth
-  maxHealth: 100
+  maxHealth: 1000
   currentHealth: 0
   isDead: 0
 --- !u!114 &4024416876074864531

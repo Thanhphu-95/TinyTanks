@@ -31,3 +31,4 @@ MonoBehaviour:
   ClickButton: {fileID: 0}
   bossSoot: {fileID: 8300000, guid: a80bbd4ec21a7ac4f9b8c6a3cc14ccdf, type: 3}
   fireZone: {fileID: 8300000, guid: c5475ca98f910bc409534dc825adb3dc, type: 3}
+  electronic: {fileID: 8300000, guid: ab297b593498a6e47ba84de770477cbe, type: 3}

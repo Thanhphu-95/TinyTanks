@@ -16,8 +16,8 @@ public class ItemManager : MonoBehaviour
     // ===== HỒI MÁU =====
     [Header("health")]
     public GameObject healthEff;             // Hiệu ứng hồi máu
-    public int totalHealAmount = 40;         // Tổng lượng máu hồi
-    public float duration = 1f;              // Thời gian hồi máu
+    public int totalHealAmount = 200;         // Tổng lượng máu hồi
+    public float duration = 3f;              // Thời gian hồi máu
     private bool canUseHealth = false;       // Có thể dùng item hồi máu hay không
 
     // ===== ĐẠN ACID =====
@@ -59,6 +59,7 @@ public class ItemManager : MonoBehaviour
             {
                 shooting.ChangeBullet(acidBulletPrefab, 5); // Đổi đạn + cấp 5 viên
                 canUseAcid = false; // Dùng xong thì mất item
+                GameEvents.OnAcidBulletCountChanged(false);
             }
         }
 
@@ -70,6 +71,7 @@ public class ItemManager : MonoBehaviour
             {
                 shooting.ChangeBullet(fireBulletPrefab, 5); // Đổi đạn + cấp 5 viên
                 canUsefire = false; // Dùng xong thì mất item
+                GameEvents.RaiseFireBulletStatusChanged(false);
             }
         }
     }
@@ -80,47 +82,50 @@ public class ItemManager : MonoBehaviour
     {
         canUseShield = true; // Cho phép dùng khiên
         Debug.Log("Đã nhặt Khiên Ô! Bấm 1 để kích hoạt.");
+        GameEvents.RaiseShieldStatusChanged(true);
     }
 
     public void CollectHealth()
     {
         canUseHealth = true; // Cho phép dùng hồi máu
+        GameEvents.RaiseHealthItemStatusChanged(true);
         Debug.Log("Đã nhặt heal");
     }
 
     public void CollectAxitBullet()
     {
         canUseAcid = true; // Cho phép dùng đạn acid
+        GameEvents.OnAcidBulletCountChanged(true);
         Debug.Log("Đã nhặt đạn Acid! Bấm phím 3 để dùng.");
     }
 
     public void CollectFireBullet()
     {
         canUsefire = true; // Cho phép dùng đạn lửa
+        GameEvents.RaiseFireBulletStatusChanged(true);
         Debug.Log("Đã nhặt fire, nhấn phím 4 để dùng");
     }
 
-    // ===== LOGIC DÙNG KHIÊN =====
+   
     private void UseUmbrella()
     {
         canUseShield = false; // Dùng xong thì mất item
 
         // Tạo khiên tại attachPoint
         GameObject shield = Instantiate(umbrellaShieldPrefab, attachPoint);
-
+        GameEvents.RaiseShieldStatusChanged(false);
         // Căn vị trí khiên phía trước nòng súng
         shield.transform.localPosition = new Vector3(0f, 0f, 0.5f);
         shield.transform.localRotation = Quaternion.Euler(80f, 0f, 0f);
 
         // Tự hủy khiên sau thời gian định sẵn
         Destroy(shield, shieldDuration);
-    }
+    } // ===== LOGIC DÙNG KHIÊN =====
 
-    // ===== LOGIC DÙNG HỒI MÁU =====
     private void UseHealth()
     {
         canUseHealth = false; // Dùng xong thì mất item
-
+        GameEvents.RaiseHealthItemStatusChanged(false);
         // Lấy script PlayerHealth trên Player
         PlayerHealth playerHealth = GetComponent<PlayerHealth>();
 
@@ -147,10 +152,10 @@ public class ItemManager : MonoBehaviour
         {
             Debug.LogError("Không tìm thấy script PlayerHealth trên Player!");
         }
-    }
+    }// ===== LOGIC DÙNG HỒI MÁU =====
 
-    // ===== COROUTINE HỒI MÁU THEO THỜI GIAN =====
-    private System.Collections.IEnumerator HealOverTimeRoutine(PlayerHealth playerHealth)
+    
+    private System.Collections.IEnumerator HealOverTimeRoutine(PlayerHealth playerHealth)// ===== COROUTINE HỒI MÁU THEO THỜI GIAN =====
     {
         float healedRemainder = 0f;                    // Phần lẻ chưa hồi
         float healRate = (float)totalHealAmount / duration; // Tốc độ hồi máu

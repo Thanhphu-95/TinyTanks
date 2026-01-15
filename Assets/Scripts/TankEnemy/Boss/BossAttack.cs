@@ -49,10 +49,7 @@ public class BossAttack : MonoBehaviour
 
     public void ArcBullet(Transform targetPlayer)
     {
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.PlaySFX(AudioManager.Instance.library.bossSoot);
-        }
+
         if (Time.time < arcCooldownTimer || targetPlayer == null) return;
 
         GameObject bulletObj = Instantiate(arcBulletPrefab, firePointAttack2.position, firePointAttack2.rotation);

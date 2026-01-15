@@ -159,8 +159,8 @@ MonoBehaviour:
   damage: 20
   collisionLayers:
     serializedVersion: 2
-    m_Bits: 256
-  explosionPrefab: {fileID: 1582275357731197809, guid: 5334360cd0cfad84bbf6855beaf10de4, type: 3}
+    m_Bits: 4294967295
+  explosionPrefab: {fileID: 6263423331148856349, guid: a22852e376245a34a839f78bd048f49b, type: 3}
 --- !u!114 &-7178382362791092636
 MonoBehaviour:
   m_ObjectHideFlags: 0

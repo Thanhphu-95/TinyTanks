@@ -86,6 +86,11 @@ public class SuicideEnemy : MonoBehaviour
                 {
                     playerHP.TakeDamage(explosionDamage);
                 }
+                if (AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlaySFX(AudioManager.Instance.library.electronic);
+                }
+
             }
 
             Rigidbody rb = hit.GetComponent<Rigidbody>();

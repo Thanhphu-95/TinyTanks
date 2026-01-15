@@ -78,7 +78,7 @@ public class UIManager : MonoBehaviour      // Class quản lý toàn bộ UI
             targetProgress = Mathf.MoveTowards(
                 targetProgress,
                 realProgress,
-                Time.unscaledDeltaTime * 0.5f); // Tăng mượt, không phụ thuộc timescale
+                Time.unscaledDeltaTime * 0.1f); // Tăng mượt, không phụ thuộc timescale
 
             if (progressBar != null)
                 progressBar.value = targetProgress; // Cập nhật slider
@@ -95,7 +95,7 @@ public class UIManager : MonoBehaviour      // Class quản lý toàn bộ UI
                 if (progressText != null)
                     progressText.text = "100%"; // Text 100%
 
-                yield return new WaitForSecondsRealtime(0.1f); // Đợi rất ngắn
+                yield return new WaitForSecondsRealtime(0.5f); // thời gian đợi
                 operation.allowSceneActivation = true; // Cho phép vào scene mới
             }
             yield return null;                 // Chờ frame tiếp theo
