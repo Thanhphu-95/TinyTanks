@@ -19,12 +19,18 @@ public class EnemyHealth : MonoBehaviour
     }
     public void TakeDamage(int amount)
     {
+
         if (isDead) return;
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, health);
         Debug.Log("Enemy Damaged: -" + amount + " | Enemy HP: " + currentHealth);
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
         if (currentHealth <= health/2)
         {
+          
             if (pointFire.childCount == 0)
             {
                 GameObject flame = Instantiate(fire, pointFire.position, pointFire.rotation);
@@ -32,10 +38,7 @@ public class EnemyHealth : MonoBehaviour
             }
 
         }
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
+        
     }
     private void Die()
     {

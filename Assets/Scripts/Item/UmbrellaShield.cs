@@ -4,21 +4,17 @@ public class UmbrellaShieldItem : MonoBehaviour
 {
     private void OnCollisionEnter(Collision collision)
     {
+        // Lấy Rigidbody của đối tượng va chạm
+        Rigidbody rb = collision.gameObject.GetComponent<Rigidbody>();
 
-        if (collision.gameObject.CompareTag("BulletEnemy")) // Kiểm tra đối tượng va chạm là viên đạn
+        // Nếu đối tượng có Rigidbody thì phản xạ
+        if (rb != null)
         {
-            Rigidbody bulletRb = collision.gameObject.GetComponent<Rigidbody>();
-            if (bulletRb != null)
-            {
-                // Lấy vector va chạm, phản xạ lại
-                Vector3 incomingVelocity = bulletRb.linearVelocity;
-                Vector3 normal = collision.contacts[0].normal;
-                Vector3 reflectVelocity = Vector3.Reflect(incomingVelocity, normal);
+            Vector3 incomingVelocity = rb.linearVelocity;                  // Vận tốc hiện tại
+            Vector3 normal = collision.contacts[0].normal;           // Pháp tuyến va chạm
+            Vector3 reflectVelocity = Vector3.Reflect(incomingVelocity, normal);
 
-                bulletRb.linearVelocity = reflectVelocity;
-
-            }
+            rb.linearVelocity = reflectVelocity;                            // Gán vận tốc phản xạ
         }
     }
-
 }

@@ -5,6 +5,7 @@ public class PauseMenuManager : MonoBehaviour
 {
     [SerializeField] private GameObject mainPanel;
     private GameObject optionsInstance; // Lưu đối tượng đã tạo ra để quản lý
+    public GameObject gameplayRoot;
 
     public void OpenMenu()
     {
@@ -23,9 +24,11 @@ public class PauseMenuManager : MonoBehaviour
 
     public void RestartGame()
     {
-        Time.timeScale = 1f;
+        GameEvents.ResetItemUI();
         string currentScene = SceneManager.GetActiveScene().name;
         UIManager.Instance.ChangeScene(currentScene);
+        AudioListener.volume = 0f;
+
     }
 
     public void ShowOptions()
@@ -63,5 +66,6 @@ public class PauseMenuManager : MonoBehaviour
         Time.timeScale = 1f;
         UIManager.Instance.ChangeScene("Main Scene");
         Debug.Log("đang quay lại Main Scene");
+        AudioListener.volume = 0f;
     }
 }

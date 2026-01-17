@@ -1,6 +1,7 @@
-﻿using UnityEngine;
-using UnityEngine.AI;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class BossMove : MonoBehaviour
 {
@@ -20,13 +21,7 @@ public class BossMove : MonoBehaviour
 
     void Start()
     {
-        foreach (Transform point in movePoints)
-        {
-            if (point != null)
-            {
-                point.SetParent(null); // Đưa về gốc (không có cha)
-            }
-        }
+        
 
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false; // Tự xoay thân xe
@@ -35,7 +30,7 @@ public class BossMove : MonoBehaviour
         // Tự tìm Player nếu chưa kéo vào Inspector
         if (playerTransform == null)
             playerTransform = GameObject.FindGameObjectWithTag("Player")?.transform;
-
+        StartCoroutine(DetachMovePointsAfterDelay(3f));
         // Kiểm tra NavMesh trước khi bắt đầu
         if (agent.isOnNavMesh)
             PickNextPoint();
@@ -107,4 +102,18 @@ public class BossMove : MonoBehaviour
         currentIndex = (currentIndex + 1) % movePoints.Count;
         agent.SetDestination(movePoints[currentIndex].position);
     }
+
+    IEnumerator DetachMovePointsAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        foreach (Transform point in movePoints)
+        {
+            if (point != null)
+            {
+                point.SetParent(null); // Đưa về gốc sau 3s
+            }
+        }
+    }
+
 }

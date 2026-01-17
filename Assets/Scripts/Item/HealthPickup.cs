@@ -2,7 +2,7 @@
 
 public class HealthPickup : MonoBehaviour
 {
-    public int totalHealAmount = 40;
+    public int totalHealAmount;
     public float duration = 1f;
 
     private void OnTriggerEnter(Collider other)

@@ -25,5 +25,6 @@ public class AudioDataLibrary : ScriptableObject
     public AudioClip bossSoot;
     public AudioClip fireZone;
     public AudioClip electronic;
+    public AudioClip metaHit;
 
 }

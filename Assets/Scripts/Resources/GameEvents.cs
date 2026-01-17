@@ -45,4 +45,12 @@ public static class GameEvents
         OnFireBulletStatusChanged?.Invoke(hasFire);
     }
 
+    public static void ResetItemUI()
+    {
+        OnShieldStatusChanged?.Invoke(false);
+        OnHealthItemStatusChanged?.Invoke(false);
+        OnAcidBulletCountChanged?.Invoke(false);
+        OnFireBulletStatusChanged?.Invoke(false);
+    }
+
 }

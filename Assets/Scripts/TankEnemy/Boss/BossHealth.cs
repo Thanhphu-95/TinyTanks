@@ -1,5 +1,6 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
+using System.Threading;
+using UnityEngine;
 
 public class BossHealth : MonoBehaviour
 {
@@ -13,6 +14,23 @@ public class BossHealth : MonoBehaviour
     public event Action<float> OnHealthPercentChanged;
     public event Action OnDeath;
 
+    [Header("Phase destroy")]
+    public Transform arm;                 // Cánh tay đang gắn trên boss
+    public GameObject armBrokenPrefab;    // Prefab cánh tay rơi
+    private bool armBroken = false;
+
+    public Transform arm2;
+    public GameObject arm2BrokenPrefab;
+    private bool arm2Broken = false;
+
+    public Transform shield;
+    public GameObject shieldBrokenPrefab;
+    private bool shieldBroken = false;
+
+
+    public GameObject explosionPrefab;
+
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -25,6 +43,39 @@ public class BossHealth : MonoBehaviour
         if (InGameUIManager.Instance != null)
         {
             InGameUIManager.Instance.InitBossHealthBar("UFO MOTHER SHIP", 1f);
+        }
+    }
+    private void Update()
+    {
+        if(isDead) return;
+        float percent= (float)currentHealth/maxHealth;
+
+        if (!armBroken && percent <= 0.8f)
+        {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX(AudioManager.Instance.library.Explode);
+            }
+            BreakArm();
+            armBroken = true;
+        }
+        if (!arm2Broken && percent <= 0.4f)
+        {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX(AudioManager.Instance.library.Explode);
+            }
+            BreakArm2();
+            arm2Broken = true;
+        }
+        if (!shieldBroken && percent <= 0.2f)
+        {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX(AudioManager.Instance.library.Explode);
+            }
+            BreakShield();
+            shieldBroken = true;
         }
     }
     private void HandleHealthUI(float percent)
@@ -54,6 +105,10 @@ public class BossHealth : MonoBehaviour
     // Hàm nhận sát thương
     public void TakeDamage(int damage)
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.library.metaHit);
+        }
         if (isDead) return;
 
         currentHealth -= damage;
@@ -80,5 +135,45 @@ public class BossHealth : MonoBehaviour
         isDead = true;
         OnDeath?.Invoke();
         Debug.Log("Boss Die!");
+        Destroy(gameObject);
+    }
+    void BreakArm()
+    {
+        if (arm == null) return;
+
+        Vector3 pos = arm.position;
+        Quaternion rot = arm.rotation;
+
+        Destroy(arm.gameObject);
+
+        if (explosionPrefab != null)
+            Instantiate(explosionPrefab, pos, rot);
+
+        if (armBrokenPrefab != null)
+            Instantiate(armBrokenPrefab, pos, rot);
+    }
+    void BreakArm2()
+    {
+        Vector3 pos = arm2.position;
+        Quaternion rot = arm2.rotation;
+        Destroy(arm2.gameObject);
+        if (explosionPrefab != null)
+            Instantiate(explosionPrefab, pos, rot);
+
+        if (armBrokenPrefab != null)
+            Instantiate(arm2BrokenPrefab, pos, rot);
+
+    }
+
+    void BreakShield()
+    {
+        Vector3 pos = shield.position;
+        Quaternion rot = shield.rotation;
+        Destroy(shield.gameObject);
+        if (explosionPrefab != null)
+            Instantiate(explosionPrefab, pos, rot);
+
+        if (armBrokenPrefab != null)
+            Instantiate(shieldBrokenPrefab, pos, rot);
     }
 }

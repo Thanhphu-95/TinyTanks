@@ -25,6 +25,10 @@ public class BossBullet : MonoBehaviour
         PlayerHealth playerHP = other.gameObject.GetComponent<PlayerHealth>();
         if (other.CompareTag("Player"))
         {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX(AudioManager.Instance.library.electronic);
+            }
             playerHP.TakeDamage(20);
             Instantiate(ExplosioVFX, transform.position, Quaternion.identity);
             // Gây sát thương cho Player ở đây

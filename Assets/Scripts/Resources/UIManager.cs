@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour      // Class quản lý toàn bộ UI
     [Header("UI Prefabs")]
     private GameObject loadingPrefab;        // Prefab loading screen
     private GameObject countdownPrefab;      // Prefab countdown
+    public bool isCountdownActive = false;
 
     private void Awake()                     // Chạy khi object được tạo
     {
@@ -34,9 +35,10 @@ public class UIManager : MonoBehaviour      // Class quản lý toàn bộ UI
     {
         if (SceneManager.GetActiveScene().name == "Main Scene") return; // Không pause ở Main Scene
 
-        if (Input.GetKeyDown(KeyCode.Escape)) // Nhấn ESC
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            TogglePauseMenu();               // Bật / tắt pause
+            if (isCountdownActive) return; // ⛔ đang countdown thì không pause
+            TogglePauseMenu();
         }
     }
 
@@ -108,20 +110,35 @@ public class UIManager : MonoBehaviour      // Class quản lý toàn bộ UI
 
         if (loadingScreen != null)             // Nếu còn loading UI
             Destroy(loadingScreen);            // Hủy loading
+        AudioListener.volume = 1f;
+
     }
 
-    public void ShowCountdown(string missionContent, Action onFinished) // Hiện countdown
+    public void ShowCountdown(string missionContent, Action onFinished)
     {
-        if (countdownPrefab != null)           // Nếu có prefab
+        if (countdownPrefab != null)
         {
-            GameObject go = Instantiate(countdownPrefab); // Tạo countdown
-            var script = go.GetComponent<CountdownManager>(); // Lấy script
+            isCountdownActive = true; // ⛔ KHÓA PAUSE
+
+            GameObject go = Instantiate(countdownPrefab);
+            var script = go.GetComponent<CountdownManager>();
+
             if (script != null)
-                script.StartCountdown(missionContent, onFinished); // Bắt đầu đếm
+            {
+                script.StartCountdown(missionContent, () =>
+                {
+                    isCountdownActive = false; // ✅ MỞ LẠI PAUSE
+                    onFinished?.Invoke();
+                });
+            }
             else
-                onFinished?.Invoke();           // Nếu lỗi thì gọi callback luôn
+            {
+                isCountdownActive = false;
+                onFinished?.Invoke();
+            }
         }
     }
+
 
     public void TogglePauseMenu()               // Bật / tắt pause
     {

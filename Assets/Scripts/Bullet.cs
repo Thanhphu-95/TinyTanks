@@ -35,6 +35,10 @@ public class Bullet : MonoBehaviour
         }
         if (collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("Player"))
         {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX(AudioManager.Instance.library.metaHit);
+            }
             Instantiate(TankHitPrefab, transform.position, Quaternion.identity);
             Destroy(gameObject);
 

@@ -30,17 +30,17 @@ public class BossBehavior : MonoBehaviour
         int curentHeal = health.currentHealth;
         if (health.isDead || player == null) return;
         bossMove.HandleTurret();
-        if (curentHeal >= health.maxHealth * 0.9)
+        if (curentHeal >= health.maxHealth * 0.8)
         {
             
             Phase01();
         }
-        else if (curentHeal > health.maxHealth *0.5)
+        else if (curentHeal > health.maxHealth *0.2)
         {
             bossMove.HandleMovement();
             Phase02();
         }
-        else
+        else 
         { 
             bossMove.HandleMovement();
             Phase03();

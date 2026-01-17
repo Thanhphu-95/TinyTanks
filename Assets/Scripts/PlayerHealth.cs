@@ -22,6 +22,7 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
+        
         if (isDead) return;
         currentHealth = Mathf.Clamp(currentHealth - amount, 0, maxHealth);
         GameEvents.OnPlayerHealthChanged?.Invoke(currentHealth, maxHealth);
