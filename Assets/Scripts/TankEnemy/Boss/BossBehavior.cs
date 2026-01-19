@@ -45,12 +45,6 @@ public class BossBehavior : MonoBehaviour
             bossMove.HandleMovement();
             Phase03();
         }
-
-        if (curentHeal < health.maxHealth * 0.3)
-        {
-            Destroy(sheild);
-        }
-
     }
 
     private void Phase01()
